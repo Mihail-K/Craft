@@ -1,12 +1,14 @@
 
 module craft.lexer.token;
 
+import craft.lexer.rule;
+
 struct Token
 {
 private:
     size_t    _line;
     size_t    _offset;
-    LexerRule _rule
+    LexerRule _rule;
     string    _token;
 
 public:
@@ -23,7 +25,7 @@ public:
     }
 
     @property
-    LexerRule rule() const
+    LexerRule rule()
     {
         return _rule;
     }
