@@ -240,7 +240,8 @@ private:
 
         while(accept(LexerRules.OpPlusPlus) ||
               accept(LexerRules.OpMinusMinus) ||
-              accept(LexerRules.OpParenLeft))
+              accept(LexerRules.OpParenLeft) ||
+              accept(LexerRules.OpBracketLeft))
         {
             if(last.rule == "OpParenLeft")
             {
@@ -259,6 +260,12 @@ private:
                 }
 
                 node = new InvokeNode(node, paren, args);
+            }
+            else if(last.rule == "OpBracketLeft")
+            {
+                node = new SubscriptNode(node, last, expression);
+
+                expect(LexerRules.OpBracketRight);
             }
             else
             {

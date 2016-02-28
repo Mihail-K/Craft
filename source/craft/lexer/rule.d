@@ -87,6 +87,16 @@ enum LexerRules : LexerRule
         new Primitive("|=")
     ),
 
+    OpBracketLeft = LexerRule("OpBracketLeft")
+    .pattern(
+        new Primitive("[")
+    ),
+
+    OpBracketRight = LexerRule("OpBracketRight")
+    .pattern(
+        new Primitive("]")
+    ),
+
     OpColon = LexerRule("OpColon")
     .pattern(
         new Primitive(":")
@@ -289,7 +299,10 @@ enum LexerRules : LexerRule
     IdentifierLower = LexerRule("IdentifierLower")
     .pattern(
         new Sequence(
-            new Bracket('a', 'z'),
+            new Selection(
+                new Bracket('a', 'z'),
+                new Primitive("_")
+            ),
             new Optional(
                 new Repetition(
                     LexerRules.IdentifierFragment.pattern

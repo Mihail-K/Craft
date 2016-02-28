@@ -35,6 +35,8 @@ interface Visitor
 
     void visit(RelationNode node);
 
+    void visit(SubscriptNode node);
+
     void visit(TernaryNode node);
 }
 

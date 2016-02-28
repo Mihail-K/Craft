@@ -17,6 +17,7 @@ public import craft.ast.multiplication;
 public import craft.ast.postfix;
 public import craft.ast.prefix;
 public import craft.ast.relation;
+public import craft.ast.subscript;
 public import craft.ast.terminal;
 public import craft.ast.ternary;
 public import craft.ast.unary;
