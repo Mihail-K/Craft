@@ -12,8 +12,10 @@ enum LexerRules : LexerRule
     Whitespace = LexerRule("Whitespace")
     .discard(true)
     .matcher(
-        new Callback(
-            input => input[0].isWhite ? [ input[0] ] : null
+        new Repetition(
+            new Callback(
+                input => input[0].isWhite ? [ input[0] ] : null
+            )
         )
     ),
 
