@@ -6,6 +6,7 @@ import craft.matcher;
 import std.ascii;
 
 enum LexerRules : LexerRule
+{
     /+ - Whitespace - +/
 
     Whitespace = LexerRule("Whitespace")
@@ -216,7 +217,7 @@ enum LexerRules : LexerRule
 
     /+ - Identifiers - +/
 
-    IdentifierLower = LexerRule("IdentifierDollar")
+    IdentifierDollar = LexerRule("IdentifierDollar")
     .matcher(
         new Sequence(
             new Primitive("$"),
@@ -253,7 +254,7 @@ enum LexerRules : LexerRule
     ),
 
     IdentifierFragment = LexerRule("IdentifierFragment")
-    .fragment(true)
+    .partial(true)
     .matcher(
         new Selection(
             new Bracket('a', 'z'),
@@ -267,7 +268,7 @@ enum LexerRules : LexerRule
 
     Error     = LexerRule("<Error>"),
     EndOfFiel = LexerRule("<EOF>")
-];
+}
 
 struct LexerRule
 {
