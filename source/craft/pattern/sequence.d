@@ -1,28 +1,28 @@
 
-module craft.matcher.repetition;
+module craft.pattern.sequence;
 
-import craft.matcher.base;
+import craft.pattern.base;
 
 import std.array;
 
-class Repetition : Matcher
+class Sequence : Pattern
 {
 private:
-    Matcher _matcher;
+    Pattern[] _patterns;
 
 public:
-    this(Matcher matcher)
+    this(Pattern[] patterns...)
     {
-        _matcher = matcher;
+        _patterns = patterns;
     }
 
     override string match(string input)
     {
         auto buffer = appender!string;
 
-        while(true)
+        foreach(pattern; _patterns)
         {
-            string result = _matcher.match(input);
+            string result = pattern.match(input);
 
             if(result)
             {
@@ -32,11 +32,10 @@ public:
             }
             else
             {
-                break;
+                return null;
             }
         }
 
-        string result = buffer.data;
-        return result ? result : null;
+        return buffer.data;
     }
 }

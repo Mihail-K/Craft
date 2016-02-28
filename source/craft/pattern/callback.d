@@ -1,9 +1,9 @@
 
-module craft.matcher.callback;
+module craft.pattern.callback;
 
-import craft.matcher.base;
+import craft.pattern.base;
 
-class Callback : Matcher
+class Callback : Pattern
 {
 private:
     string function(string) _callback;

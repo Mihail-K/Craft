@@ -1,9 +1,9 @@
 
-module craft.matcher.bracket;
+module craft.pattern.bracket;
 
-import craft.matcher.base;
+import craft.pattern.base;
 
-class Bracket : Matcher
+class Bracket : Pattern
 {
 private:
     char _lower;

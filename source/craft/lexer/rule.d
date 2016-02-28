@@ -1,7 +1,7 @@
 
 module craft.lexer.rule;
 
-import craft.matcher;
+import craft.pattern;
 
 import std.ascii;
 
@@ -11,7 +11,7 @@ enum LexerRules : LexerRule
 
     Whitespace = LexerRule("Whitespace")
     .discard(true)
-    .matcher(
+    .pattern(
         new Repetition(
             new Callback(
                 input => input[0].isWhite ? [ input[0] ] : null
@@ -23,7 +23,7 @@ enum LexerRules : LexerRule
 
     LineComment = LexerRule("LineComment")
     .discard(true)
-    .matcher(
+    .pattern(
         new Sequence(
             new Primitive("//"),
             new Optional(
@@ -39,7 +39,7 @@ enum LexerRules : LexerRule
 
     BlockComment = LexerRule("BlockComment")
     .discard(true)
-    .matcher(
+    .pattern(
         new Sequence(
             new Primitive("/*"),
             new Optional(
@@ -58,198 +58,198 @@ enum LexerRules : LexerRule
     /+ - Operators - +/
 
     OpBang = LexerRule("OpBang")
-    .matcher(
+    .pattern(
         new Primitive("!")
     ),
 
     OpBitAnd = LexerRule("OpBitAnd")
-    .matcher(
+    .pattern(
         new Primitive("&")
     ),
 
     OpBitAndEquals = LexerRule("OpBitAndEquals")
-    .matcher(
+    .pattern(
         new Primitive("&=")
     ),
 
     OpBitOr = LexerRule("OpBitOr")
-    .matcher(
+    .pattern(
         new Primitive("|")
     ),
 
     OpBitOrEquals = LexerRule("OpBitOrEquals")
-    .matcher(
+    .pattern(
         new Primitive("|=")
     ),
 
     OpColon = LexerRule("OpColon")
-    .matcher(
+    .pattern(
         new Primitive(":")
     ),
 
     OpComma = LexerRule("OpComma")
-    .matcher(
+    .pattern(
         new Primitive(",")
     ),
 
     OpDivide = LexerRule("OpDivide")
-    .matcher(
+    .pattern(
         new Primitive("/")
     ),
 
     OpDivideEquals = LexerRule("OpDivideEquals")
-    .matcher(
+    .pattern(
         new Primitive("/=")
     ),
 
     OpDot = LexerRule("OpDot")
-    .matcher(
+    .pattern(
         new Primitive(".")
     ),
 
     OpEquals = LexerRule("OpEquals")
-    .matcher(
+    .pattern(
         new Primitive("==")
     ),
 
     OpGreater = LexerRule("OpGreater")
-    .matcher(
+    .pattern(
         new Primitive(">")
     ),
 
     OpGreaterEquals = LexerRule("OpGreaterEquals")
-    .matcher(
+    .pattern(
         new Primitive(">=")
     ),
 
     OpLess = LexerRule("OpLess")
-    .matcher(
+    .pattern(
         new Primitive("<")
     ),
 
     OpLessEquals = LexerRule("OpLessEquals")
-    .matcher(
+    .pattern(
         new Primitive("<=")
     ),
 
     OpMinus = LexerRule("OpMinus")
-    .matcher(
+    .pattern(
         new Primitive("-")
     ),
 
     OpMinusEquals = LexerRule("OpMinusEquals")
-    .matcher(
+    .pattern(
         new Primitive("-=")
     ),
 
     OpModulo = LexerRule("OpModulo")
-    .matcher(
+    .pattern(
         new Primitive("%")
     ),
 
     OpNotEquals = LexerRule("OpNotEquals")
-    .matcher(
+    .pattern(
         new Primitive("!=")
     ),
 
     OpModuloEquals = LexerRule("OpModuloEquals")
-    .matcher(
+    .pattern(
         new Primitive("%=")
     ),
 
     OpPlus = LexerRule("OpPlus")
-    .matcher(
+    .pattern(
         new Primitive("+")
     ),
 
     OpPlusEquals = LexerRule("OpPlusEquals")
-    .matcher(
+    .pattern(
         new Primitive("+=")
     ),
 
     OpShiftLeft = LexerRule("OpShiftLeft")
-    .matcher(
+    .pattern(
         new Primitive("<<")
     ),
 
     OpShiftLeftEquals = LexerRule("OpShiftLeftEquals")
-    .matcher(
+    .pattern(
         new Primitive("<<=")
     ),
 
     OpShiftRight = LexerRule("OpShiftRight")
-    .matcher(
+    .pattern(
         new Primitive(">>")
     ),
 
     OpShiftRightEquals = LexerRule("OpShiftRightEquals")
-    .matcher(
+    .pattern(
         new Primitive(">>=")
     ),
 
     OpTilde = LexerRule("OpTilde")
-    .matcher(
+    .pattern(
         new Primitive("~")
     ),
 
     OpTildeEquals = LexerRule("OpTildeEquals")
-    .matcher(
+    .pattern(
         new Primitive("~=")
     ),
 
     OpTimes = LexerRule("OpTimes")
-    .matcher(
+    .pattern(
         new Primitive("*")
     ),
 
     OpTimesEquals = LexerRule("OpTimesEquals")
-    .matcher(
+    .pattern(
         new Primitive("*=")
     ),
 
     OpXor = LexerRule("OpXor")
-    .matcher(
+    .pattern(
         new Primitive("^")
     ),
 
     OpXorEquals = LexerRule("OpXorEquals")
-    .matcher(
+    .pattern(
         new Primitive("^=")
     ),
 
     /+ - Identifiers - +/
 
     IdentifierDollar = LexerRule("IdentifierDollar")
-    .matcher(
+    .pattern(
         new Sequence(
             new Primitive("$"),
             new Optional(
                 new Repetition(
-                    LexerRules.IdentifierFragment.matcher
+                    LexerRules.IdentifierFragment.pattern
                 )
             )
         )
     ),
 
     IdentifierLower = LexerRule("IdentifierLower")
-    .matcher(
+    .pattern(
         new Sequence(
             new Bracket('a', 'z'),
             new Optional(
                 new Repetition(
-                    LexerRules.IdentifierFragment.matcher
+                    LexerRules.IdentifierFragment.pattern
                 )
             )
         )
     ),
 
     IdentifierUpper = LexerRule("IdentifierUpper")
-    .matcher(
+    .pattern(
         new Sequence(
             new Bracket('A', 'Z'),
             new Optional(
                 new Repetition(
-                    LexerRules.IdentifierFragment.matcher
+                    LexerRules.IdentifierFragment.pattern
                 )
             )
         )
@@ -257,7 +257,7 @@ enum LexerRules : LexerRule
 
     IdentifierFragment = LexerRule("IdentifierFragment")
     .partial(true)
-    .matcher(
+    .pattern(
         new Selection(
             new Bracket('a', 'z'),
             new Bracket('A', 'Z'),
@@ -276,9 +276,9 @@ struct LexerRule
 {
 private:
     bool    _discard;
-    Matcher _matcher;
     string  _name;
     bool    _partial;
+    Pattern _pattern;
 
 public:
     this(string name)
@@ -300,19 +300,7 @@ public:
 
     bool internal() const
     {
-        return _matcher is null;
-    }
-
-    Matcher matcher()
-    {
-        return _matcher;
-    }
-
-    LexerRule matcher(Matcher matcher)
-    {
-        _matcher = matcher;
-
-        return this;
+        return _pattern is null;
     }
 
     bool partial() const
@@ -323,6 +311,18 @@ public:
     LexerRule partial(bool partial)
     {
         _partial = partial;
+
+        return this;
+    }
+
+    Pattern pattern()
+    {
+        return _pattern;
+    }
+
+    LexerRule pattern(Pattern pattern)
+    {
+        _pattern = pattern;
 
         return this;
     }

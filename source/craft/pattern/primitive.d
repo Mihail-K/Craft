@@ -1,9 +1,9 @@
 
-module craft.matcher.primitive;
+module craft.pattern.primitive;
 
-import craft.matcher.base;
+import craft.pattern.base;
 
-class Primitive : Matcher
+class Primitive : Pattern
 {
 private:
     string[] _primitives;
