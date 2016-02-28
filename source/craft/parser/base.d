@@ -1,12 +1,14 @@
 
 module craft.parser.base;
 
+import craft.ast;
 import craft.lexer;
 
 struct Parser
 {
 private:
-    Lexer _lexer;
+    LexerToken _last;
+    Lexer      _lexer;
 
 public:
     this(Lexer lexer)
@@ -14,14 +16,15 @@ public:
         _lexer = lexer;
     }
 
-    void start()
+    ExpressionNode start()
     {
-        expression;
+        return expression;
     }
 
 private:
     void advance()
     {
+        _last = _lexer.front;
         _lexer.popFront;
     }
 
@@ -47,89 +50,102 @@ private:
         return true;
     }
 
+    LexerToken last()
+    {
+        return _last;
+    }
+
 private:
-    void expression()
+    ExpressionNode expression()
     {
-        equality;
+        return equality;
     }
 
-    void equality()
+    ExpressionNode equality()
     {
-        relation;
+        auto node = relation;
 
-        while(accept(LexerRules.OpEquals) ||
-              accept(LexerRules.OpNotEquals))
+        if(accept(LexerRules.OpEquals) ||
+           accept(LexerRules.OpNotEquals))
         {
-            relation;
+            node = new EqualityNode(node, last, equality);
         }
+
+        return node;
     }
 
-    void relation()
+    ExpressionNode relation()
     {
-        bitshift;
+        auto node = bitshift;
 
-        while(accept(LexerRules.OpLess) ||
-              accept(LexerRules.OpGreater) ||
-              accept(LexerRules.OpLessEquals) ||
-              accept(LexerRules.OpGreaterEquals))
+        if(accept(LexerRules.OpLess) ||
+           accept(LexerRules.OpGreater) ||
+           accept(LexerRules.OpLessEquals) ||
+           accept(LexerRules.OpGreaterEquals))
         {
-            bitshift;
+            node = new RelationNode(node, last, relation);
         }
+
+        return node;
     }
 
-    void bitshift()
+    ExpressionNode bitshift()
     {
-        addition;
+        auto node = addition;
 
-        while(accept(LexerRules.OpShiftLeft) ||
-              accept(LexerRules.OpShiftRight))
+        if(accept(LexerRules.OpShiftLeft) ||
+           accept(LexerRules.OpShiftRight))
         {
-            addition;
+            node = new BitshiftNode(node, last, bitshift);
         }
+
+        return node;
     }
 
-    void addition()
+    ExpressionNode addition()
     {
-        multiplication;
+        auto node = multiplication;
 
-        while(accept(LexerRules.OpPlus) ||
-              accept(LexerRules.OpMinus))
+        if(accept(LexerRules.OpPlus) ||
+           accept(LexerRules.OpMinus))
         {
-            multiplication;
+            node = new AdditionNode(node, last, addition);
         }
+
+        return node;
     }
 
-    void multiplication()
+    ExpressionNode multiplication()
     {
-        terminal;
+        auto node = terminal;
 
-        while(accept(LexerRules.OpTimes) ||
-              accept(LexerRules.OpDivide) ||
-              accept(LexerRules.OpModulo))
+        if(accept(LexerRules.OpTimes) ||
+           accept(LexerRules.OpDivide) ||
+           accept(LexerRules.OpModulo))
         {
-            terminal;
+            node = new MultiplicationNode(node, last, multiplication);
         }
+
+        return node;
     }
 
-    void terminal()
+    ExpressionNode terminal()
     {
         if(accept(LexerRules.IdentifierLower))
         {
-            // TODO
+            return new IdentifierNode.Lower(last);
         }
         else if(accept(LexerRules.IdentifierUpper))
         {
-            // TODO
+            return new IdentifierNode.Upper(last);
         }
         else if(accept(LexerRules.IdentifierDollar))
         {
-            // TODO
+            return new IdentifierNode.Dollar(last);
         }
         else
         {
             assert(0);
         }
     }
-
-
 }
