@@ -4,7 +4,7 @@ module craft.ast.bitshift;
 import craft.ast;
 import craft.lexer;
 
-class BitshiftNode : BinaryNode
+final class BitshiftNode : BinaryNode
 {
     mixin Visitable;
 

@@ -4,15 +4,12 @@ module craft.ast.relation;
 import craft.ast;
 import craft.lexer;
 
-class RelationNode : BinaryNode
+final class RelationNode : BinaryNode
 {
+    mixin Visitable;
+
     this(ExpressionNode left, LexerToken operator, ExpressionNode right)
     {
         super(left, operator, right);
-    }
-
-    override void accept(Visitor visitor)
-    {
-        visitor.visit(this);
     }
 }

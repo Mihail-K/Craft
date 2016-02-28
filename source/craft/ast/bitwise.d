@@ -4,7 +4,7 @@ module craft.ast.bitwise;
 import craft.ast;
 import craft.lexer;
 
-class BitwiseNode : BinaryNode
+final class BitwiseNode : BinaryNode
 {
     mixin Visitable;
 

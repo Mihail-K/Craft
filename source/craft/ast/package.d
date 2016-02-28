@@ -12,6 +12,7 @@ public import craft.ast.expression;
 public import craft.ast.identifier;
 public import craft.ast.logical;
 public import craft.ast.multiplication;
+public import craft.ast.prefix;
 public import craft.ast.relation;
 public import craft.ast.terminal;
 public import craft.ast.ternary;

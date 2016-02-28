@@ -7,7 +7,7 @@ import craft.lexer;
 abstract class IdentifierNode : TerminalNode
 {
 public:
-    static class Dollar : IdentifierNode
+    static final class Dollar : IdentifierNode
     {
         mixin Visitable;
 
@@ -17,7 +17,7 @@ public:
         }
     }
 
-    static class Lower : IdentifierNode
+    static final class Lower : IdentifierNode
     {
         mixin Visitable;
 
@@ -27,7 +27,7 @@ public:
         }
     }
 
-    static class Upper : IdentifierNode
+    static final class Upper : IdentifierNode
     {
         mixin Visitable;
 

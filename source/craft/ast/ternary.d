@@ -4,7 +4,7 @@ module craft.ast.ternary;
 import craft.ast;
 import craft.lexer;
 
-class TernaryNode : ExpressionNode
+final class TernaryNode : ExpressionNode
 {
     mixin Visitable;
 

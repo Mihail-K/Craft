@@ -4,7 +4,7 @@ module craft.ast.assignment;
 import craft.ast;
 import craft.lexer;
 
-class AssignmentNode : BinaryNode
+final class AssignmentNode : BinaryNode
 {
     mixin Visitable;
 

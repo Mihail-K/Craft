@@ -4,7 +4,7 @@ module craft.ast.equality;
 import craft.ast;
 import craft.lexer;
 
-class EqualityNode : BinaryNode
+final class EqualityNode : BinaryNode
 {
     mixin Visitable;
 

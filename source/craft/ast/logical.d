@@ -4,7 +4,7 @@ module craft.ast.logical;
 import craft.ast;
 import craft.lexer;
 
-class LogicalNode : BinaryNode
+final class LogicalNode : BinaryNode
 {
     mixin Visitable;
 

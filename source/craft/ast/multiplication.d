@@ -4,7 +4,7 @@ module craft.ast.multiplication;
 import craft.ast;
 import craft.lexer;
 
-class MultiplicationNode : BinaryNode
+final class MultiplicationNode : BinaryNode
 {
     mixin Visitable;
 
