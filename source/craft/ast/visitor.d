@@ -25,6 +25,8 @@ interface Visitor
 
     void visit(MultiplicationNode node);
 
+    void visit(PrefixNode node);
+
     void visit(RelationNode node);
 
     void visit(TernaryNode node);

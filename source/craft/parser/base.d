@@ -190,7 +190,7 @@ private:
 
     ExpressionNode multiplication()
     {
-        auto node = terminal;
+        auto node = prefix;
 
         if(accept(LexerRules.OpTimes) ||
            accept(LexerRules.OpDivide) ||
@@ -200,6 +200,19 @@ private:
         }
 
         return node;
+    }
+
+    ExpressionNode prefix()
+    {
+        if(accept(LexerRules.OpPlus) ||
+           accept(LexerRules.OpMinus) ||
+           accept(LexerRules.OpBang) ||
+           accept(LexerRules.OpTilde))
+        {
+            return new PrefixNode(last, prefix);
+        }
+
+        return terminal;
     }
 
     ExpressionNode terminal()
