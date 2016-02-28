@@ -15,15 +15,21 @@ interface Visitor
 
     void visit(EqualityNode node);
 
+    void visit(ExpressionListNode node);
+
     void visit(IdentifierNode.Dollar node);
 
     void visit(IdentifierNode.Lower node);
 
     void visit(IdentifierNode.Upper node);
 
+    void visit(InvokeNode node);
+
     void visit(LogicalNode node);
 
     void visit(MultiplicationNode node);
+
+    void visit(PostfixNode node);
 
     void visit(PrefixNode node);
 

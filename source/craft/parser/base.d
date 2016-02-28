@@ -18,7 +18,11 @@ public:
 
     ExpressionNode start()
     {
-        return expression;
+        auto node = expression;
+
+        expect(LexerRules.EndOfFile);
+
+        return node;
     }
 
 private:
@@ -61,6 +65,19 @@ private:
     }
 
 private:
+    ExpressionListNode expressionlist()
+    {
+        ExpressionNode[] nodes;
+
+        do
+        {
+            nodes ~= expression;
+        }
+        while(accept(LexerRules.OpComma));
+
+        return new ExpressionListNode(nodes);
+    }
+
     ExpressionNode expression()
     {
         return assignment;
@@ -204,7 +221,9 @@ private:
 
     ExpressionNode prefix()
     {
-        if(accept(LexerRules.OpPlus) ||
+        if(accept(LexerRules.OpPlusPlus) ||
+           accept(LexerRules.OpMinusMinus) ||
+           accept(LexerRules.OpPlus) ||
            accept(LexerRules.OpMinus) ||
            accept(LexerRules.OpBang) ||
            accept(LexerRules.OpTilde))
@@ -212,7 +231,42 @@ private:
             return new PrefixNode(last, prefix);
         }
 
-        return terminal;
+        return postfix;
+    }
+
+    ExpressionNode postfix()
+    {
+        auto node = terminal;
+
+        while(accept(LexerRules.OpPlusPlus) ||
+              accept(LexerRules.OpMinusMinus) ||
+              accept(LexerRules.OpParenLeft))
+        {
+            if(last.rule == "OpParenLeft")
+            {
+                auto paren = last;
+                ExpressionListNode args;
+
+                if(accept(LexerRules.OpParenRight))
+                {
+                    args = new ExpressionListNode([ ]);
+                }
+                else
+                {
+                    args = expressionlist;
+
+                    expect(LexerRules.OpParenRight);
+                }
+
+                node = new InvokeNode(node, paren, args);
+            }
+            else
+            {
+                node = new PostfixNode(node, last);
+            }
+        }
+
+        return node;
     }
 
     ExpressionNode terminal()

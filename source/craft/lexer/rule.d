@@ -167,6 +167,11 @@ enum LexerRules : LexerRule
         new Primitive("-=")
     ),
 
+    OpMinusMinus = LexerRule("OpMinusMinus")
+    .pattern(
+        new Primitive("--")
+    ),
+
     OpModulo = LexerRule("OpModulo")
     .pattern(
         new Primitive("%")
@@ -182,6 +187,16 @@ enum LexerRules : LexerRule
         new Primitive("%=")
     ),
 
+    OpParenLeft = LexerRule("OpParenLeft")
+    .pattern(
+        new Primitive("(")
+    ),
+
+    OpParenRight = LexerRule("OpParenRight")
+    .pattern(
+        new Primitive(")")
+    ),
+
     OpPlus = LexerRule("OpPlus")
     .pattern(
         new Primitive("+")
@@ -190,6 +205,11 @@ enum LexerRules : LexerRule
     OpPlusEquals = LexerRule("OpPlusEquals")
     .pattern(
         new Primitive("+=")
+    ),
+
+    OpPlusPlus = LexerRule("OpPlusPlus")
+    .pattern(
+        new Primitive("++")
     ),
 
     OpQuery = LexerRule("OpQuery")
