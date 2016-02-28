@@ -47,7 +47,7 @@ public:
     }
 
     @property
-    LexerToken token()
+    inout(LexerToken) token() inout nothrow
     {
         return _token;
     }

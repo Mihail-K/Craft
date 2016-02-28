@@ -19,17 +19,17 @@ public:
         _right    = right;
     }
 
-    ExpressionNode left()
+    inout(ExpressionNode) left() inout nothrow
     {
         return _left;
     }
 
-    LexerToken operator()
+    inout(LexerToken) operator() inout nothrow
     {
         return _operator;
     }
 
-    ExpressionNode right()
+    inout(ExpressionNode) right() inout nothrow
     {
         return _right;
     }

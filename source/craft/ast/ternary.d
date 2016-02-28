@@ -22,19 +22,19 @@ public:
     }
 
     @property
-    ExpressionNode query()
+    inout(ExpressionNode) query() inout nothrow
     {
         return _query;
     }
 
     @property
-    ExpressionNode left()
+    inout(ExpressionNode) left() inout nothrow
     {
         return _left;
     }
 
     @property
-    ExpressionNode right()
+    inout(ExpressionNode) right() inout nothrow
     {
         return _right;
     }

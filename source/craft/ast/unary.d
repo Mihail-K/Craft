@@ -18,13 +18,13 @@ public:
     }
 
     @property
-    ExpressionNode node()
+    inout(ExpressionNode) node() inout nothrow
     {
         return _node;
     }
 
     @property
-    LexerToken operator()
+    inout(LexerToken) operator() inout nothrow
     {
         return _operator;
     }
