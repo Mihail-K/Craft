@@ -267,7 +267,7 @@ enum LexerRules : LexerRule
     /+ - Internal Rules - +/
 
     Error     = LexerRule("<Error>"),
-    EndOfFiel = LexerRule("<EOF>")
+    EndOfFile = LexerRule("<EOF>")
 }
 
 struct LexerRule

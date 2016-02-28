@@ -26,6 +26,8 @@ public:
 
             if(result)
             {
+                input = input[result.length .. $];
+
                 buffer ~= result;
             }
             else

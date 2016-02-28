@@ -3,13 +3,13 @@ module craft.lexer.token;
 
 import craft.lexer.rule;
 
-struct Token
+struct LexerToken
 {
 private:
     size_t    _line;
     size_t    _offset;
     LexerRule _rule;
-    string    _token;
+    string    _text;
 
 public:
     @property
@@ -31,8 +31,8 @@ public:
     }
 
     @property
-    string token() const
+    string text() const
     {
-        return _token;
+        return _text;
     }
 }
