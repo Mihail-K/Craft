@@ -16,13 +16,16 @@ public:
         _lexer = lexer;
     }
 
-    ExpressionNode start()
+    StartNode start()
     {
-        auto node = expression;
+        Node[] nodes;
 
-        expect(LexerRules.EndOfFile);
+        while(!accept(LexerRules.EndOfFile))
+        {
+            nodes ~= statement;
+        }
 
-        return node;
+        return new StartNode(nodes);
     }
 
 private:
@@ -47,11 +50,9 @@ private:
         return false;
     }
 
-    bool expect(LexerRule rule)
+    void expect(LexerRule rule)
     {
         assert(accept(rule));
-
-        return true;
     }
 
     LexerToken front()
@@ -65,6 +66,56 @@ private:
     }
 
 private:
+    StatementNode statement()
+    {
+        if(accept(LexerRules.KeyIf))
+        {
+            return ifStatement;
+        }
+        else
+        {
+            return expression;
+        }
+    }
+
+    StatementNode ifStatement()
+    {
+        return new IfNode(ifQuery, ifBody, ifElse);
+    }
+
+    ExpressionNode ifQuery()
+    {
+        if(accept(LexerRules.OpParenLeft))
+        {
+            auto node = expression;
+
+            expect(LexerRules.OpParenRight);
+
+            return node;
+        }
+        else
+        {
+            return expression;
+        }
+    }
+
+    StatementNode ifBody()
+    {
+        return statement;
+    }
+
+    StatementNode ifElse()
+    {
+        if(accept(LexerRules.KeyElse))
+        {
+            return statement;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     ExpressionListNode expressionlist()
     {
         ExpressionNode[] nodes;
@@ -196,10 +247,13 @@ private:
     {
         auto node = multiplication;
 
-        if(accept(LexerRules.OpPlus) ||
-           accept(LexerRules.OpMinus))
+        if(front.line == last.line)
         {
-            node = new AdditionNode(node, last, addition);
+            if(accept(LexerRules.OpPlus) ||
+               accept(LexerRules.OpMinus))
+            {
+                node = new AdditionNode(node, last, addition);
+            }
         }
 
         return node;
@@ -306,7 +360,8 @@ private:
         }
         else
         {
-            assert(0);
+            import std.conv;
+            assert(0, front.text);
         }
     }
 }
