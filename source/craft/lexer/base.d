@@ -29,7 +29,7 @@ public:
     {
         if(empty)
         {
-            return _token = token(LexerRules.EndOfFile, "$");
+            return _token = token(LexerRules.EndOfFile, null);
         }
         else
         {
@@ -52,7 +52,16 @@ public:
 
             if(bestMatch.length > 0)
             {
-                return _token = token(bestRule, bestMatch);
+                _token = token(bestRule, bestMatch);
+
+                if(_token.rule.discard)
+                {
+                    return popFront, front;
+                }
+                else
+                {
+                    return _token;
+                }
             }
             else
             {
