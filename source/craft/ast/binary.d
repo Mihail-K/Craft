@@ -19,16 +19,19 @@ public:
         _right    = right;
     }
 
+    @property
     inout(ExpressionNode) left() inout nothrow
     {
         return _left;
     }
 
+    @property
     inout(LexerToken) operator() inout nothrow
     {
         return _operator;
     }
 
+    @property
     inout(ExpressionNode) right() inout nothrow
     {
         return _right;
