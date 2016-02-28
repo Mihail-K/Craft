@@ -13,6 +13,10 @@ interface Visitor
 
     void visit(BitwiseNode node);
 
+    void visit(BooleanNode node);
+
+    void visit(CharacterNode node);
+
     void visit(EqualityNode node);
 
     void visit(ExpressionListNode node);
@@ -22,6 +26,8 @@ interface Visitor
     void visit(IdentifierNode.Lower node);
 
     void visit(IdentifierNode.Upper node);
+
+    void visit(IntegerNode node);
 
     void visit(InvokeNode node);
 

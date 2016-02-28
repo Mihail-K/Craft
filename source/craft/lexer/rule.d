@@ -53,7 +53,230 @@ enum LexerRules : LexerRule
         )
     ),
 
+    /+ - Literals - +/
+
+    Underscore = LexerRule("Underscore")
+    .partial(true)
+    .pattern(
+        new Primitive("_")
+    ),
+
+    Zero = LexerRule("Zero")
+    .partial(true)
+    .pattern(
+        new Primitive("0")
+    ),
+
+    /+ - Dec Literals - +/
+
+    DecDigit = LexerRule("DecDigit")
+    .partial(true)
+    .pattern(
+        new Bracket('0', '9')
+    ),
+
+    DecDigits = LexerRule("DecDigits")
+    .partial(true)
+    .pattern(
+        new Sequence(
+            DecDigit.pattern,
+            new Optional(
+                new Repetition(
+                    new Selection(
+                        DecDigit.pattern,
+                        Underscore.pattern
+                    )
+                )
+            )
+        )
+    ),
+
+    DecLiteral = LexerRule("DecLiteral")
+    .pattern(
+        DecDigits.pattern
+    ),
+
+    /+ - Hex Literals - +/
+
+    HexDigit = LexerRule("HexDigit")
+    .partial(true)
+    .pattern(
+        new Selection(
+            DecDigit.pattern,
+            new Bracket('a', 'f'),
+            new Bracket('A', 'F')
+        )
+    ),
+
+    HexDigits = LexerRule("HexDigits")
+    .partial(true)
+    .pattern(
+        new Sequence(
+            HexDigit.pattern,
+            new Optional(
+                new Repetition(
+                    new Selection(
+                        HexDigit.pattern,
+                        Underscore.pattern
+                    )
+                )
+            )
+        )
+    ),
+
+    HexPrefix = LexerRule("HexPrefix")
+    .partial(true)
+    .pattern(
+        new Sequence(
+            Zero.pattern,
+            new Primitive("x", "X")
+        )
+    ),
+
+    HexLiteral = LexerRule("HexLiteral")
+    .pattern(
+        new Sequence(
+            HexPrefix.pattern,
+            HexDigits.pattern
+        )
+    ),
+
+    /+ - Oct Literals - +/
+
+    OctDigit = LexerRule("OctDigit")
+    .partial(true)
+    .pattern(
+        new Selection(
+            new Bracket('0', '7')
+        )
+    ),
+
+    OctDigits = LexerRule("OctDigits")
+    .partial(true)
+    .pattern(
+        new Sequence(
+            OctDigit.pattern,
+            new Optional(
+                new Repetition(
+                    new Selection(
+                        OctDigit.pattern,
+                        Underscore.pattern
+                    )
+                )
+            )
+        )
+    ),
+
+    OctPrefix = LexerRule("OctPrefix")
+    .partial(true)
+    .pattern(
+        new Sequence(
+            Zero.pattern,
+            new Primitive("o", "O")
+        )
+    ),
+
+    OctLiteral = LexerRule("OctLiteral")
+    .pattern(
+        new Sequence(
+            OctPrefix.pattern,
+            OctDigits.pattern
+        )
+    ),
+
+    /+ - Char Literals - +/
+
+    Backslash = LexerRule("Backslash")
+    .partial(true)
+    .pattern(
+        new Primitive("\\")
+    ),
+
+    PlainCharacter = LexerRule("PlainCharacter")
+    .partial(true)
+    .pattern(
+        new Complement(
+            new Primitive("'", "\\")
+        )
+    ),
+
+    EscapeCharacter = LexerRule("EscapeCharacter")
+    .partial(true)
+    .pattern(
+        new Selection(
+            new Sequence(
+                Backslash.pattern,
+                new Primitive(
+                    "0", "b", "f", "n", "r",
+                    "t", "v", "'", "\"", "\\"
+                )
+            ),
+            OctalEscape.pattern,
+            UnicodeEscape.pattern
+        )
+    ),
+
+    OctalEscape = LexerRule("OctalEscape")
+    .partial(true)
+    .pattern(
+        new Sequence(
+            Backslash.pattern,
+            new Selection(
+                OctDigit.pattern,
+                new Sequence(
+                    OctDigit.pattern,
+                    OctDigit.pattern
+                ),
+                new Sequence(
+                    new Bracket('0', '3'),
+                    OctDigit.pattern,
+                    OctDigit.pattern
+                )
+            )
+        )
+    ),
+
+    UnicodeEscape = LexerRule("UnicodeEscape")
+    .partial(true)
+    .pattern(
+        new Sequence(
+            Backslash.pattern,
+            new Primitive("u"),
+            HexDigit.pattern,
+            HexDigit.pattern,
+            HexDigit.pattern,
+            HexDigit.pattern
+        )
+    ),
+
+    CharLiteral = LexerRule("CharLiteral")
+    .pattern(
+        new Sequence(
+            new Primitive("'"),
+            new Selection(
+                PlainCharacter.pattern,
+                EscapeCharacter.pattern
+            ),
+            new Primitive("'")
+        )
+    ),
+
     /+ - Keywords - +/
+
+    KeyFalse = LexerRule("KeyFalse")
+    .pattern(
+        new Primitive("false")
+    ),
+
+    KeyThis = LexerRule("KeyThis")
+    .pattern(
+        new Primitive("this")
+    ),
+
+    KeyTrue = LexerRule("KeyTrue")
+    .pattern(
+        new Primitive("true")
+    ),
 
     /+ - Operators - +/
 

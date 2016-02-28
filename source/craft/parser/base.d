@@ -290,6 +290,20 @@ private:
         {
             return new IdentifierNode.Dollar(last);
         }
+        else if(accept(LexerRules.KeyTrue) ||
+                accept(LexerRules.KeyFalse))
+        {
+            return new BooleanNode(last);
+        }
+        else if(accept(LexerRules.DecLiteral) ||
+                accept(LexerRules.HexLiteral))
+        {
+            return new IntegerNode(last);
+        }
+        else if(accept(LexerRules.CharLiteral))
+        {
+            return new CharacterNode(last);
+        }
         else
         {
             assert(0);
