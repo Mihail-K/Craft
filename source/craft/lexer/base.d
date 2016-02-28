@@ -27,7 +27,11 @@ public:
 
     LexerToken front()
     {
-        if(empty)
+        if(_token != LexerToken.init)
+        {
+            return _token;
+        }
+        else if(empty)
         {
             return _token = token(LexerRules.EndOfFile, null);
         }
@@ -74,28 +78,33 @@ public:
     {
         if(_token.text.length)
         {
-            foreach(ch; _input[0 .. _token.text.length])
-            {
-                switch(ch)
-                {
-                    case '\n':
-                        _line = _line + 1;
-                        _offset = 0;
-                        break;
-
-                    case '\t':
-                        _offset = _offset + 4;
-                        break;
-
-                    default:
-                        _offset = _offset + 1;
-                        break;
-                }
-            }
+            advance(_token.text);
         }
 
         _input = _input[_token.text.length .. $];
         _token = LexerToken.init;
+    }
+
+    private void advance(string text)
+    {
+        foreach(ch; text)
+        {
+            switch(ch)
+            {
+                case '\n':
+                    _line = _line + 1;
+                    _offset = 0;
+                    break;
+
+                case '\t':
+                    _offset = _offset + 4;
+                    break;
+
+                default:
+                    _offset = _offset + 1;
+                    break;
+            }
+        }
     }
 
     private LexerToken token(LexerRule rule, string text) inout
