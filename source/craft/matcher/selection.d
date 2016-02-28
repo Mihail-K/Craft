@@ -3,13 +3,13 @@ module craft.matcher.selection;
 
 import craft.matcher.base;
 
-class SelectionMatcher : Matcher
+class Selection : Matcher
 {
 private:
     Matcher[] _matchers;
 
 public:
-    this(Matcher[] matchers)
+    this(Matcher[] matchers...)
     {
         _matchers = matchers;
     }
@@ -28,9 +28,4 @@ public:
 
         return null;
     }
-}
-
-SelectionMatcher selection(Matcher[] matchers...)
-{
-    return new SelectionMatcher(matchers);
 }

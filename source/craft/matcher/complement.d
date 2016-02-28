@@ -1,9 +1,9 @@
 
-module craft.matcher.negate;
+module craft.matcher.complement;
 
 import craft.matcher.base;
 
-class NegateMatcher : Matcher
+class Complement : Matcher
 {
 private:
     Matcher _matcher;
@@ -25,9 +25,4 @@ public:
             return null;
         }
     }
-}
-
-NegateMatcher negate(Matcher matcher)
-{
-    return new NegateMatcher(matcher);
 }

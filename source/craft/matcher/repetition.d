@@ -1,11 +1,11 @@
 
-module craft.matcher.repeat;
+module craft.matcher.repetition;
 
 import craft.matcher.base;
 
 import std.array;
 
-class RepeatMatcher : Matcher
+class Repetition : Matcher
 {
 private:
     Matcher _matcher;
@@ -37,9 +37,4 @@ public:
         string result = buffer.data;
         return result ? result : null;
     }
-}
-
-RepeatMatcher repeat(Matcher matcher)
-{
-    return new RepeatMatcher(matcher);
 }

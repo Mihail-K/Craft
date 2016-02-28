@@ -5,13 +5,13 @@ import craft.matcher.base;
 
 import std.array;
 
-class SequenceMatcher : Matcher
+class Sequence : Matcher
 {
 private:
     Matcher[] _matchers;
 
 public:
-    this(Matcher[] matchers)
+    this(Matcher[] matchers...)
     {
         _matchers = matchers;
     }
@@ -36,9 +36,4 @@ public:
 
         return buffer.data;
     }
-}
-
-SequenceMatcher sequence(Matcher[] matchers...)
-{
-    return new SequenceMatcher(matchers);
 }

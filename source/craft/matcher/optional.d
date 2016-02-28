@@ -3,7 +3,7 @@ module craft.matcher.optional;
 
 import craft.matcher.base;
 
-class OptionalMatcher : Matcher
+class Optional : Matcher
 {
 private:
     Matcher _matcher;
@@ -19,9 +19,4 @@ public:
         string result = _matcher.match(input);
         return result ? result : "";
     }
-}
-
-OptionalMatcher optional(Matcher matcher)
-{
-    return new OptionalMatcher(matcher);
 }
