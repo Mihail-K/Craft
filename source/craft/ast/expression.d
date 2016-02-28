@@ -1,9 +1,9 @@
 
 module craft.ast.expression;
 
-import craft.ast.base;
+import craft.ast;
 
-abstract class ExpressionNode : Node
+abstract class ExpressionNode : StatementNode
 {
 
 }
