@@ -184,20 +184,24 @@ enum LexerRules : LexerRule
         )
     ),
 
-    /+ - Char Literals - +/
+    /+ - String Literals - +/
 
-    Backslash = LexerRule("Backslash")
+    BackSlash = LexerRule("BackSlash")
     .partial(true)
     .pattern(
         new Primitive("\\")
     ),
 
-    PlainCharacter = LexerRule("PlainCharacter")
+    SingleQuote = LexerRule("SingleQuote")
     .partial(true)
     .pattern(
-        new Complement(
-            new Primitive("'", "\\")
-        )
+        new Primitive("'")
+    ),
+
+    DoubleQuote = LexerRule("DoubleQuote")
+    .partial(true)
+    .pattern(
+        new Primitive("\"")
     ),
 
     EscapeCharacter = LexerRule("EscapeCharacter")
@@ -205,7 +209,7 @@ enum LexerRules : LexerRule
     .pattern(
         new Selection(
             new Sequence(
-                Backslash.pattern,
+                BackSlash.pattern,
                 new Primitive(
                     "0", "b", "f", "n", "r",
                     "t", "v", "'", "\"", "\\"
@@ -220,7 +224,7 @@ enum LexerRules : LexerRule
     .partial(true)
     .pattern(
         new Sequence(
-            Backslash.pattern,
+            BackSlash.pattern,
             new Selection(
                 OctDigit.pattern,
                 new Sequence(
@@ -240,7 +244,7 @@ enum LexerRules : LexerRule
     .partial(true)
     .pattern(
         new Sequence(
-            Backslash.pattern,
+            BackSlash.pattern,
             new Primitive("u"),
             HexDigit.pattern,
             HexDigit.pattern,
@@ -249,15 +253,43 @@ enum LexerRules : LexerRule
         )
     ),
 
-    CharLiteral = LexerRule("CharLiteral")
+    StringLiteral = LexerRule("StringLiteral")
     .pattern(
-        new Sequence(
-            new Primitive("'"),
-            new Selection(
-                PlainCharacter.pattern,
-                EscapeCharacter.pattern
+        new Selection(
+            new Sequence(
+                SingleQuote.pattern,
+                new Optional(
+                    new Repetition(
+                        new Selection(
+                            new Complement(
+                                new Selection(
+                                    SingleQuote.pattern,
+                                    BackSlash.pattern
+                                )
+                            ),
+                            EscapeCharacter.pattern
+                        )
+                    )
+                ),
+                SingleQuote.pattern
             ),
-            new Primitive("'")
+            new Sequence(
+                DoubleQuote.pattern,
+                new Optional(
+                    new Repetition(
+                        new Selection(
+                            new Complement(
+                                new Selection(
+                                    DoubleQuote.pattern,
+                                    BackSlash.pattern
+                                )
+                            ),
+                            EscapeCharacter.pattern
+                        )
+                    )
+                ),
+                DoubleQuote.pattern
+            )
         )
     ),
 

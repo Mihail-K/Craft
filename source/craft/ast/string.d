@@ -1,10 +1,10 @@
 
-module craft.ast.character;
+module craft.ast.string;
 
 import craft.ast;
 import craft.lexer;
 
-final class CharacterNode : LiteralNode
+final class StringNode : LiteralNode
 {
     mixin Visitable;
 

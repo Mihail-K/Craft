@@ -300,9 +300,9 @@ private:
         {
             return new IntegerNode(last);
         }
-        else if(accept(LexerRules.CharLiteral))
+        else if(accept(LexerRules.StringLiteral))
         {
-            return new CharacterNode(last);
+            return new StringNode(last);
         }
         else
         {

@@ -15,8 +15,6 @@ interface Visitor
 
     void visit(BooleanNode node);
 
-    void visit(CharacterNode node);
-
     void visit(EqualityNode node);
 
     void visit(ExpressionListNode node);
@@ -40,6 +38,8 @@ interface Visitor
     void visit(PrefixNode node);
 
     void visit(RelationNode node);
+
+    void visit(StringNode node);
 
     void visit(SubscriptNode node);
 
