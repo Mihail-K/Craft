@@ -295,9 +295,19 @@ enum LexerRules : LexerRule
 
     /+ - Keywords - +/
 
+    KeyElse = LexerRule("KeyElse")
+    .pattern(
+        new Primitive("else")
+    ),
+
     KeyFalse = LexerRule("KeyFalse")
     .pattern(
         new Primitive("false")
+    ),
+
+    KeyIf = LexerRule("KeyIf")
+    .pattern(
+        new Primitive("if")
     ),
 
     KeyThis = LexerRule("KeyThis")

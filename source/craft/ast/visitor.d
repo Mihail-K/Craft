@@ -25,6 +25,8 @@ interface Visitor
 
     void visit(IdentifierNode.Upper node);
 
+    void visit(IfNode node);
+
     void visit(IntegerNode node);
 
     void visit(InvokeNode node);
@@ -38,6 +40,8 @@ interface Visitor
     void visit(PrefixNode node);
 
     void visit(RelationNode node);
+
+    void visit(StartNode node);
 
     void visit(StringNode node);
 
