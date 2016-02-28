@@ -6,32 +6,32 @@ import craft.lexer.rule;
 struct LexerToken
 {
 private:
-    size_t    _line;
-    size_t    _offset;
-    LexerRule _rule;
-    string    _text;
+    size_t _line;
+    size_t _offset;
+    string _rule;
+    string _text;
 
 public:
     @property
-    size_t line() const
+    size_t line() inout nothrow
     {
         return _line;
     }
 
     @property
-    size_t offset() const
+    size_t offset() inout nothrow
     {
         return _offset;
     }
 
     @property
-    LexerRule rule()
+    string rule() inout nothrow
     {
         return _rule;
     }
 
     @property
-    string text() const
+    string text() inout nothrow
     {
         return _text;
     }

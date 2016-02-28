@@ -24,13 +24,13 @@ public:
 private:
     void advance()
     {
-        _last = _lexer.front;
+        _last = front;
         _lexer.popFront;
     }
 
     bool match(LexerRule rule)
     {
-        return _lexer.front.rule == rule;
+        return front.rule == rule.name;
     }
 
     bool accept(LexerRule rule)
@@ -48,6 +48,11 @@ private:
         assert(accept(rule));
 
         return true;
+    }
+
+    LexerToken front()
+    {
+        return _lexer.front;
     }
 
     LexerToken last()

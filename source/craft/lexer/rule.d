@@ -321,7 +321,7 @@ public:
         _name = name;
     }
 
-    bool discard() const
+    bool discard() inout
     {
         return _discard;
     }
@@ -333,12 +333,17 @@ public:
         return this;
     }
 
-    bool internal() const
+    bool internal() inout
     {
         return _pattern is null;
     }
 
-    bool partial() const
+    string name() inout
+    {
+        return _name;
+    }
+
+    bool partial() inout
     {
         return _partial;
     }

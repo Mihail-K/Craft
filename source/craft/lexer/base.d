@@ -20,7 +20,7 @@ public:
         _input = input;
     }
 
-    bool empty() const
+    bool empty() inout
     {
         return _input.length == 0;
     }
@@ -54,7 +54,7 @@ public:
             {
                 _token = token(bestRule, bestMatch);
 
-                if(_token.rule.discard)
+                if(bestRule.discard)
                 {
                     return popFront, front;
                 }
@@ -79,16 +79,16 @@ public:
                 switch(ch)
                 {
                     case '\n':
+                        _line = _line + 1;
                         _offset = 0;
-                        _line++;
                         break;
 
                     case '\t':
-                        _offset += 4;
+                        _offset = _offset + 4;
                         break;
 
                     default:
-                        _offset++;
+                        _offset = _offset + 1;
                         break;
                 }
             }
@@ -98,8 +98,8 @@ public:
         _token = LexerToken.init;
     }
 
-    private LexerToken token(LexerRule rule, string text)
+    private LexerToken token(LexerRule rule, string text) inout
     {
-        return LexerToken(_line, _offset, rule, text);
+        return LexerToken(_line, _offset, rule.name, text);
     }
 }
