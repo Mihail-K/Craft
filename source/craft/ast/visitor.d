@@ -7,7 +7,11 @@ interface Visitor
 {
     void visit(AdditionNode node);
 
+    void visit(AssignmentNode node);
+
     void visit(BitshiftNode node);
+
+    void visit(BitwiseNode node);
 
     void visit(EqualityNode node);
 
@@ -17,7 +21,19 @@ interface Visitor
 
     void visit(IdentifierNode.Upper node);
 
+    void visit(LogicalNode node);
+
     void visit(MultiplicationNode node);
 
     void visit(RelationNode node);
+
+    void visit(TernaryNode node);
+}
+
+mixin template Visitable()
+{
+    override void accept(Visitor visitor)
+    {
+        visitor.visit(this);
+    }
 }

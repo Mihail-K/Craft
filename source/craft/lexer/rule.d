@@ -57,6 +57,11 @@ enum LexerRules : LexerRule
 
     /+ - Operators - +/
 
+    OpAssign = LexerRule("OpAssign")
+    .pattern(
+        new Primitive("=")
+    ),
+
     OpBang = LexerRule("OpBang")
     .pattern(
         new Primitive("!")
@@ -132,6 +137,26 @@ enum LexerRules : LexerRule
         new Primitive("<=")
     ),
 
+    OpLogicalAnd = LexerRule("OpLogicalAnd")
+    .pattern(
+        new Primitive("&&", "and")
+    ),
+
+    OpLogicalAndEquals = LexerRule("OpLogicalAndEquals")
+    .pattern(
+        new Primitive("&&=")
+    ),
+
+    OpLogicalOr = LexerRule("OpLogicalOr")
+    .pattern(
+        new Primitive("||", "or")
+    ),
+
+    OpLogicalOrEquals = LexerRule("OpLogicalOrEquals")
+    .pattern(
+        new Primitive("||=")
+    ),
+
     OpMinus = LexerRule("OpMinus")
     .pattern(
         new Primitive("-")
@@ -165,6 +190,16 @@ enum LexerRules : LexerRule
     OpPlusEquals = LexerRule("OpPlusEquals")
     .pattern(
         new Primitive("+=")
+    ),
+
+    OpQuery = LexerRule("OpQuery")
+    .pattern(
+        new Primitive("?")
+    ),
+
+    OpQueryEquals = LexerRule("OpQueryEquals")
+    .pattern(
+        new Primitive("?=")
     ),
 
     OpShiftLeft = LexerRule("OpShiftLeft")
@@ -207,12 +242,12 @@ enum LexerRules : LexerRule
         new Primitive("*=")
     ),
 
-    OpXor = LexerRule("OpXor")
+    OpBitXor = LexerRule("OpBitXor")
     .pattern(
         new Primitive("^")
     ),
 
-    OpXorEquals = LexerRule("OpXorEquals")
+    OpBitXorEquals = LexerRule("OpBitXorEquals")
     .pattern(
         new Primitive("^=")
     ),

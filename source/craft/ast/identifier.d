@@ -9,40 +9,31 @@ abstract class IdentifierNode : TerminalNode
 public:
     static class Dollar : IdentifierNode
     {
+        mixin Visitable;
+
         this(LexerToken token)
         {
             super(token);
-        }
-
-        override void accept(Visitor visitor)
-        {
-            visitor.visit(this);
         }
     }
 
     static class Lower : IdentifierNode
     {
+        mixin Visitable;
+
         this(LexerToken token)
         {
             super(token);
-        }
-
-        override void accept(Visitor visitor)
-        {
-            visitor.visit(this);
         }
     }
 
     static class Upper : IdentifierNode
     {
+        mixin Visitable;
+
         this(LexerToken token)
         {
             super(token);
-        }
-
-        override void accept(Visitor visitor)
-        {
-            visitor.visit(this);
         }
     }
 

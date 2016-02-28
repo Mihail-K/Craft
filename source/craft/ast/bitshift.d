@@ -6,13 +6,10 @@ import craft.lexer;
 
 class BitshiftNode : BinaryNode
 {
+    mixin Visitable;
+
     this(ExpressionNode left, LexerToken operator, ExpressionNode right)
     {
         super(left, operator, right);
-    }
-
-    override void accept(Visitor visitor)
-    {
-        visitor.visit(this);
     }
 }

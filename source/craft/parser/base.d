@@ -58,7 +58,75 @@ private:
 private:
     ExpressionNode expression()
     {
-        return equality;
+        return assignment;
+    }
+
+    ExpressionNode assignment()
+    {
+        auto node = ternary;
+
+        if(accept(LexerRules.OpAssign) ||
+           accept(LexerRules.OpPlusEquals) ||
+           accept(LexerRules.OpMinusEquals) ||
+           accept(LexerRules.OpTimesEquals) ||
+           accept(LexerRules.OpDivideEquals) ||
+           accept(LexerRules.OpModuloEquals) ||
+           accept(LexerRules.OpShiftLeftEquals) ||
+           accept(LexerRules.OpShiftRightEquals) ||
+           accept(LexerRules.OpBitAndEquals) ||
+           accept(LexerRules.OpBitOrEquals) ||
+           accept(LexerRules.OpBitXorEquals) ||
+           accept(LexerRules.OpLogicalAndEquals) ||
+           accept(LexerRules.OpLogicalOrEquals) ||
+           accept(LexerRules.OpQueryEquals))
+        {
+            node = new AssignmentNode(node, last, assignment);
+        }
+
+        return node;
+    }
+
+    ExpressionNode ternary()
+    {
+        auto node = logical;
+
+        if(accept(LexerRules.OpQuery))
+        {
+            auto left = expression;
+
+            expect(LexerRules.OpColon);
+
+            node = new TernaryNode(node, left, ternary);
+        }
+
+        return node;
+    }
+
+    ExpressionNode logical()
+    {
+        auto node = bitwise;
+
+        if(accept(LexerRules.OpLogicalAnd) ||
+           accept(LexerRules.OpLogicalOr))
+        {
+            node = new LogicalNode(node, last, logical);
+        }
+
+        return node;
+    }
+
+    ExpressionNode bitwise()
+    {
+        auto node = equality;
+
+        if(accept(LexerRules.OpBitAnd) ||
+           accept(LexerRules.OpBitOr) ||
+           accept(LexerRules.OpBitXor))
+        {
+            node = new BitwiseNode(node, last, bitwise);
+        }
+
+        return node;
     }
 
     ExpressionNode equality()
