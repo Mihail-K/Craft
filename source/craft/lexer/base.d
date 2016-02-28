@@ -10,6 +10,8 @@ struct Lexer
 {
 private:
     string     _input;
+    size_t     _line;
+    size_t     _offset;
     LexerToken _token;
 
 public:
@@ -27,7 +29,7 @@ public:
     {
         if(empty)
         {
-            return _token = LexerToken(0, 0, LexerRules.EndOfFile, "$");
+            return _token = token(LexerRules.EndOfFile, "$");
         }
         else
         {
@@ -50,18 +52,45 @@ public:
 
             if(bestMatch.length > 0)
             {
-                return _token = LexerToken(0, 0, bestRule, bestMatch);
+                return _token = token(bestRule, bestMatch);
             }
             else
             {
-                return _token = LexerToken(0, 0, LexerRules.Error, _input);
+                return _token = token(LexerRules.Error, _input);
             }
         }
     }
 
     void popFront()
     {
+        if(_token.text.length)
+        {
+            foreach(ch; _input[0 .. _token.text.length])
+            {
+                switch(ch)
+                {
+                    case '\n':
+                        _offset = 0;
+                        _line++;
+                        break;
+
+                    case '\t':
+                        _offset += 4;
+                        break;
+
+                    default:
+                        _offset++;
+                        break;
+                }
+            }
+        }
+
         _input = _input[_token.text.length .. $];
         _token = LexerToken.init;
+    }
+
+    private LexerToken token(LexerRule rule, string text)
+    {
+        return LexerToken(_line, _offset, rule, text);
     }
 }
