@@ -392,6 +392,16 @@ enum LexerRules : LexerRule
         new Primitive("==")
     ),
 
+    OpExponent = LexerRule("OpExponent")
+    .pattern(
+        new Primitive("^^")
+    ),
+
+    OpExponentEquals = LexerRule("OpExponentEquals")
+    .pattern(
+        new Primitive("^^=")
+    ),
+
     OpGreater = LexerRule("OpGreater")
     .pattern(
         new Primitive(">")

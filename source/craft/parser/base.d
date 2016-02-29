@@ -152,9 +152,10 @@ private:
            accept(LexerRules.OpBitXorEquals) ||
            accept(LexerRules.OpLogicalAndEquals) ||
            accept(LexerRules.OpLogicalOrEquals) ||
-           accept(LexerRules.OpQueryEquals))
+           accept(LexerRules.OpQueryEquals) ||
+           accept(LexerRules.OpExponentEquals))
         {
-            node = new AssignmentNode(node, last, assignment);
+            return new AssignmentNode(node, last, assignment);
         }
 
         return node;
@@ -170,7 +171,7 @@ private:
 
             expect(LexerRules.OpColon);
 
-            node = new TernaryNode(node, left, ternary);
+            return new TernaryNode(node, left, ternary);
         }
 
         return node;
@@ -183,7 +184,7 @@ private:
         if(accept(LexerRules.OpLogicalAnd) ||
            accept(LexerRules.OpLogicalOr))
         {
-            node = new LogicalNode(node, last, logical);
+            return new LogicalNode(node, last, logical);
         }
 
         return node;
@@ -197,7 +198,7 @@ private:
            accept(LexerRules.OpBitOr) ||
            accept(LexerRules.OpBitXor))
         {
-            node = new BitwiseNode(node, last, bitwise);
+            return new BitwiseNode(node, last, bitwise);
         }
 
         return node;
@@ -210,7 +211,7 @@ private:
         if(accept(LexerRules.OpEquals) ||
            accept(LexerRules.OpNotEquals))
         {
-            node = new EqualityNode(node, last, equality);
+            return new EqualityNode(node, last, equality);
         }
 
         return node;
@@ -225,7 +226,7 @@ private:
            accept(LexerRules.OpLessEquals) ||
            accept(LexerRules.OpGreaterEquals))
         {
-            node = new RelationNode(node, last, relation);
+            return new RelationNode(node, last, relation);
         }
 
         return node;
@@ -238,7 +239,7 @@ private:
         if(accept(LexerRules.OpShiftLeft) ||
            accept(LexerRules.OpShiftRight))
         {
-            node = new BitshiftNode(node, last, bitshift);
+            return new BitshiftNode(node, last, bitshift);
         }
 
         return node;
@@ -254,7 +255,7 @@ private:
                accept(LexerRules.OpMinus) ||
                accept(LexerRules.OpTilde))
             {
-                node = new AdditionNode(node, last, addition);
+                return new AdditionNode(node, last, addition);
             }
         }
 
@@ -263,13 +264,25 @@ private:
 
     ExpressionNode multiplication()
     {
-        auto node = prefix;
+        auto node = exponent;
 
         if(accept(LexerRules.OpTimes) ||
            accept(LexerRules.OpDivide) ||
            accept(LexerRules.OpModulo))
         {
-            node = new MultiplicationNode(node, last, multiplication);
+            return new MultiplicationNode(node, last, multiplication);
+        }
+
+        return node;
+    }
+
+    ExpressionNode exponent()
+    {
+        auto node = prefix;
+
+        if(accept(LexerRules.OpExponent))
+        {
+            return new MultiplicationNode(node, last, exponent);
         }
 
         return node;
