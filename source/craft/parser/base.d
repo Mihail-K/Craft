@@ -141,6 +141,7 @@ private:
         if(accept(LexerRules.OpAssign) ||
            accept(LexerRules.OpPlusEquals) ||
            accept(LexerRules.OpMinusEquals) ||
+           accept(LexerRules.OpTildeEquals) ||
            accept(LexerRules.OpTimesEquals) ||
            accept(LexerRules.OpDivideEquals) ||
            accept(LexerRules.OpModuloEquals) ||
@@ -250,7 +251,8 @@ private:
         if(front.line == last.line)
         {
             if(accept(LexerRules.OpPlus) ||
-               accept(LexerRules.OpMinus))
+               accept(LexerRules.OpMinus) ||
+               accept(LexerRules.OpTilde))
             {
                 node = new AdditionNode(node, last, addition);
             }
