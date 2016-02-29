@@ -3,6 +3,9 @@ module craft.parser.base;
 
 import craft.ast;
 import craft.lexer;
+import craft.parser.exception;
+
+import std.exception;
 
 struct Parser
 {
@@ -52,7 +55,7 @@ private:
 
     void expect(LexerRule rule)
     {
-        assert(accept(rule));
+        enforce(accept(rule), new ExpectFailedException(rule, last, front));
     }
 
     LexerToken front()
@@ -397,8 +400,7 @@ private:
         }
         else
         {
-            import std.conv;
-            assert(0, text(last) ~ " : " ~ text(front));
+            throw new UnexpectedTokenException(last, front);
         }
     }
 }
