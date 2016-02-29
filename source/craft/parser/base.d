@@ -89,29 +89,38 @@ private:
 
     ExpressionNode assignment()
     {
-        auto node = if_;
+        LexerToken[] operators;
+        ExpressionNode[] nodes = [ if_ ];
 
-        if(accept(LexerRules.OpAssign) ||
-           accept(LexerRules.OpPlusEquals) ||
-           accept(LexerRules.OpMinusEquals) ||
-           accept(LexerRules.OpTildeEquals) ||
-           accept(LexerRules.OpTimesEquals) ||
-           accept(LexerRules.OpDivideEquals) ||
-           accept(LexerRules.OpModuloEquals) ||
-           accept(LexerRules.OpShiftLeftEquals) ||
-           accept(LexerRules.OpShiftRightEquals) ||
-           accept(LexerRules.OpBitAndEquals) ||
-           accept(LexerRules.OpBitOrEquals) ||
-           accept(LexerRules.OpBitXorEquals) ||
-           accept(LexerRules.OpLogicalAndEquals) ||
-           accept(LexerRules.OpLogicalOrEquals) ||
-           accept(LexerRules.OpQueryEquals) ||
-           accept(LexerRules.OpExponentEquals))
+        while(accept(LexerRules.OpAssign) ||
+              accept(LexerRules.OpPlusEquals) ||
+              accept(LexerRules.OpMinusEquals) ||
+              accept(LexerRules.OpTildeEquals) ||
+              accept(LexerRules.OpTimesEquals) ||
+              accept(LexerRules.OpDivideEquals) ||
+              accept(LexerRules.OpModuloEquals) ||
+              accept(LexerRules.OpShiftLeftEquals) ||
+              accept(LexerRules.OpShiftRightEquals) ||
+              accept(LexerRules.OpBitAndEquals) ||
+              accept(LexerRules.OpBitOrEquals) ||
+              accept(LexerRules.OpBitXorEquals) ||
+              accept(LexerRules.OpLogicalAndEquals) ||
+              accept(LexerRules.OpLogicalOrEquals) ||
+              accept(LexerRules.OpQueryEquals) ||
+              accept(LexerRules.OpExponentEquals))
         {
-            return new AssignmentNode(node, last, assignment);
+            operators ~= last;
+            nodes ~= if_;
         }
 
-        return node;
+        if(operators.length)
+        {
+            return new AssignmentNode(nodes, operators);
+        }
+        else
+        {
+            return nodes[0];
+        }
     }
 
     ExpressionNode if_()
@@ -196,113 +205,183 @@ private:
 
     ExpressionNode logical()
     {
-        auto node = bitwise;
+        LexerToken[] operators;
+        ExpressionNode[] nodes = [ bitwise ];
 
-        if(accept(LexerRules.OpLogicalAnd) ||
-           accept(LexerRules.OpLogicalOr))
+        while(accept(LexerRules.OpLogicalAnd) ||
+              accept(LexerRules.OpLogicalOr))
         {
-            return new LogicalNode(node, last, logical);
+            operators ~= last;
+            nodes ~= bitwise;
         }
 
-        return node;
+        if(operators.length)
+        {
+            return new LogicalNode(nodes, operators);
+        }
+        else
+        {
+            return nodes[0];
+        }
     }
 
     ExpressionNode bitwise()
     {
-        auto node = equality;
+        LexerToken[] operators;
+        ExpressionNode[] nodes = [ equality ];
 
-        if(accept(LexerRules.OpBitAnd) ||
-           accept(LexerRules.OpBitOr) ||
-           accept(LexerRules.OpBitXor))
+        while(accept(LexerRules.OpBitAnd) ||
+              accept(LexerRules.OpBitOr) ||
+              accept(LexerRules.OpBitXor))
         {
-            return new BitwiseNode(node, last, bitwise);
+            operators ~= last;
+            nodes ~= equality;
         }
 
-        return node;
+        if(operators.length)
+        {
+            return new BitwiseNode(nodes, operators);
+        }
+        else
+        {
+            return nodes[0];
+        }
     }
 
     ExpressionNode equality()
     {
-        auto node = relation;
+        LexerToken[] operators;
+        ExpressionNode[] nodes = [ relation ];
 
-        if(accept(LexerRules.OpEquals) ||
-           accept(LexerRules.OpNotEquals))
+        while(accept(LexerRules.OpEquals) ||
+              accept(LexerRules.OpNotEquals))
         {
-            return new EqualityNode(node, last, equality);
+            operators ~= last;
+            nodes ~= relation;
         }
 
-        return node;
+        if(operators.length)
+        {
+            return new EqualityNode(nodes, operators);
+        }
+        else
+        {
+            return nodes[0];
+        }
     }
 
     ExpressionNode relation()
     {
-        auto node = bitshift;
+        LexerToken[] operators;
+        ExpressionNode[] nodes = [ bitshift ];
 
-        if(accept(LexerRules.OpLess) ||
-           accept(LexerRules.OpGreater) ||
-           accept(LexerRules.OpLessEquals) ||
-           accept(LexerRules.OpGreaterEquals))
+        while(accept(LexerRules.OpLess) ||
+              accept(LexerRules.OpGreater) ||
+              accept(LexerRules.OpLessEquals) ||
+              accept(LexerRules.OpGreaterEquals))
         {
-            return new RelationNode(node, last, relation);
+            operators ~= last;
+            nodes ~= bitshift;
         }
 
-        return node;
+        if(operators.length)
+        {
+            return new RelationNode(nodes, operators);
+        }
+        else
+        {
+            return nodes[0];
+        }
     }
 
     ExpressionNode bitshift()
     {
-        auto node = addition;
+        LexerToken[] operators;
+        ExpressionNode[] nodes = [ addition ];
 
-        if(accept(LexerRules.OpShiftLeft) ||
-           accept(LexerRules.OpShiftRight))
+        while(accept(LexerRules.OpShiftLeft) ||
+              accept(LexerRules.OpShiftRight))
         {
-            return new BitshiftNode(node, last, bitshift);
+            operators ~= last;
+            nodes ~= addition;
         }
 
-        return node;
+        if(operators.length)
+        {
+            return new BitshiftNode(nodes, operators);
+        }
+        else
+        {
+            return nodes[0];
+        }
     }
 
     ExpressionNode addition()
     {
-        auto node = multiplication;
+        LexerToken[] operators;
+        ExpressionNode[] nodes = [ multiplication ];
 
-        if(front.line == last.line)
+        while(front.line == last.line && (
+              accept(LexerRules.OpPlus) ||
+              accept(LexerRules.OpMinus) ||
+              accept(LexerRules.OpTilde)))
         {
-            if(accept(LexerRules.OpPlus) ||
-               accept(LexerRules.OpMinus) ||
-               accept(LexerRules.OpTilde))
-            {
-                return new AdditionNode(node, last, addition);
-            }
+            operators ~= last;
+            nodes ~= multiplication;
         }
 
-        return node;
+        if(operators.length)
+        {
+            return new AdditionNode(nodes, operators);
+        }
+        else
+        {
+            return nodes[0];
+        }
     }
 
     ExpressionNode multiplication()
     {
-        auto node = exponent;
+        LexerToken[] operators;
+        ExpressionNode[] nodes = [ exponent ];
 
-        if(accept(LexerRules.OpTimes) ||
-           accept(LexerRules.OpDivide) ||
-           accept(LexerRules.OpModulo))
+        while(accept(LexerRules.OpTimes) ||
+              accept(LexerRules.OpDivide) ||
+              accept(LexerRules.OpModulo))
         {
-            return new MultiplicationNode(node, last, multiplication);
+            operators ~= last;
+            nodes ~= exponent;
         }
 
-        return node;
+        if(operators.length)
+        {
+            return new MultiplicationNode(nodes, operators);
+        }
+        else
+        {
+            return nodes[0];
+        }
     }
 
     ExpressionNode exponent()
     {
-        auto node = prefix;
+        LexerToken[] operators;
+        ExpressionNode[] nodes = [ prefix ];
 
         if(accept(LexerRules.OpExponent))
         {
-            return new MultiplicationNode(node, last, exponent);
+            operators ~= last;
+            nodes ~= prefix;
         }
 
-        return node;
+        if(operators.length)
+        {
+            return new MultiplicationNode(nodes, operators);
+        }
+        else
+        {
+            return nodes[0];
+        }
     }
 
     ExpressionNode prefix()

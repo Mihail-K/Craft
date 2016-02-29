@@ -8,8 +8,8 @@ final class RelationNode : BinaryNode
 {
     mixin Visitable;
 
-    this(ExpressionNode left, LexerToken operator, ExpressionNode right)
+    this(ExpressionNode[] nodes, LexerToken[] operators)
     {
-        super(left, operator, right);
+        super(nodes, operators);
     }
 }

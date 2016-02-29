@@ -7,33 +7,25 @@ import craft.lexer;
 abstract class BinaryNode : ExpressionNode
 {
 private:
-    ExpressionNode _left;
-    LexerToken     _operator;
-    ExpressionNode _right;
+    ExpressionNode[] _nodes;
+    LexerToken[]     _operators;
 
 public:
-    this(ExpressionNode left, LexerToken operator, ExpressionNode right)
+    this(ExpressionNode[] nodes, LexerToken[] operators)
     {
-        _left     = left;
-        _operator = operator;
-        _right    = right;
+        _nodes     = nodes;
+        _operators = operators;
     }
 
     @property
-    inout(ExpressionNode) left() inout nothrow
+    inout(ExpressionNode[]) nodes() inout nothrow
     {
-        return _left;
+        return _nodes;
     }
 
     @property
-    inout(LexerToken) operator() inout nothrow
+    inout(LexerToken[]) operators() inout nothrow
     {
-        return _operator;
-    }
-
-    @property
-    inout(ExpressionNode) right() inout nothrow
-    {
-        return _right;
+        return _operators;
     }
 }

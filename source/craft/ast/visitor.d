@@ -3,6 +3,8 @@ module craft.ast.visitor;
 
 import craft.ast;
 
+import std.typecons;
+
 interface Visitor
 {
     Object visit(AdditionNode node);
@@ -49,6 +51,8 @@ interface Visitor
 
     Object visit(TernaryNode node);
 }
+
+alias NullVisitor = BlackHole!Visitor;
 
 mixin template Visitable()
 {
