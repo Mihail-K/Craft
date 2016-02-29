@@ -85,18 +85,15 @@ private:
 
     ExpressionNode ifQuery()
     {
-        if(accept(LexerRules.OpParenLeft))
-        {
-            auto node = expression;
+        auto node = expression;
 
-            expect(LexerRules.OpParenRight);
-
-            return node;
-        }
-        else
+        if(front.line == last.line)
         {
-            return expression;
+            // Trailing colon separator.
+            expect(LexerRules.OpColon);
         }
+
+        return node;
     }
 
     StatementNode ifBody()
@@ -108,6 +105,9 @@ private:
     {
         if(accept(LexerRules.KeyElse))
         {
+            // Optional trailing colon.
+            accept(LexerRules.OpColon);
+
             return statement;
         }
         else
@@ -372,6 +372,14 @@ private:
         else if(accept(LexerRules.StringLiteral))
         {
             return new StringNode(last);
+        }
+        else if(accept(LexerRules.OpParenLeft))
+        {
+            auto node = expression;
+
+            expect(LexerRules.OpParenRight);
+
+            return node;
         }
         else
         {
