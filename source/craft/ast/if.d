@@ -3,17 +3,17 @@ module craft.ast.if_;
 
 import craft.ast;
 
-final class IfNode : StatementNode
+final class IfNode : ExpressionNode
 {
     mixin Visitable;
 
 private:
     ExpressionNode _query;
-    StatementNode  _body;
-    StatementNode  _else;
+    ExpressionNode _body;
+    ExpressionNode _else;
 
 public:
-    this(ExpressionNode query, StatementNode body_, StatementNode else_)
+    this(ExpressionNode query, ExpressionNode body_, ExpressionNode else_)
     {
         _query = query;
         _body  = body_;
@@ -27,13 +27,13 @@ public:
     }
 
     @property
-    inout(StatementNode) body_() inout nothrow
+    inout(ExpressionNode) body_() inout nothrow
     {
         return _body;
     }
 
     @property
-    inout(StatementNode) else_() inout nothrow
+    inout(ExpressionNode) else_() inout nothrow
     {
         return _else;
     }

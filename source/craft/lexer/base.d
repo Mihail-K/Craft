@@ -4,6 +4,7 @@ module craft.lexer.base;
 import craft.lexer.rule;
 import craft.lexer.token;
 
+import std.container;
 import std.traits;
 
 struct Lexer
@@ -13,6 +14,8 @@ private:
     size_t     _line;
     size_t     _offset;
     LexerToken _token;
+
+    SList!uint _indent;
 
 public:
     this(string input)
@@ -42,7 +45,7 @@ public:
 
             foreach(rule; EnumMembers!LexerRules)
             {
-                if(!rule.internal && !rule.partial)
+                static if(!rule.internal && !rule.partial)
                 {
                     string result = rule.pattern.match(_input);
 

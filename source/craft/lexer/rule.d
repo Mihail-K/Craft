@@ -300,6 +300,11 @@ enum LexerRules : LexerRule
         new Primitive("else")
     ),
 
+    KeyEnd = LexerRule("KeyEnd")
+    .pattern(
+        new Primitive("end")
+    ),
+
     KeyFalse = LexerRule("KeyFalse")
     .pattern(
         new Primitive("false")

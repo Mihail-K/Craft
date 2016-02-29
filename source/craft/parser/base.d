@@ -22,7 +22,7 @@ public:
 
         while(!accept(LexerRules.EndOfFile))
         {
-            nodes ~= statement;
+            nodes ~= expression;
         }
 
         return new StartNode(nodes);
@@ -66,56 +66,6 @@ private:
     }
 
 private:
-    StatementNode statement()
-    {
-        if(accept(LexerRules.KeyIf))
-        {
-            return ifStatement;
-        }
-        else
-        {
-            return expression;
-        }
-    }
-
-    StatementNode ifStatement()
-    {
-        return new IfNode(ifQuery, ifBody, ifElse);
-    }
-
-    ExpressionNode ifQuery()
-    {
-        auto node = expression;
-
-        if(front.line == last.line)
-        {
-            // Trailing colon separator.
-            expect(LexerRules.OpColon);
-        }
-
-        return node;
-    }
-
-    StatementNode ifBody()
-    {
-        return statement;
-    }
-
-    StatementNode ifElse()
-    {
-        if(accept(LexerRules.KeyElse))
-        {
-            // Optional trailing colon.
-            accept(LexerRules.OpColon);
-
-            return statement;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
     ExpressionListNode expressionlist()
     {
         ExpressionNode[] nodes;
@@ -136,7 +86,7 @@ private:
 
     ExpressionNode assignment()
     {
-        auto node = ternary;
+        auto node = if_;
 
         if(accept(LexerRules.OpAssign) ||
            accept(LexerRules.OpPlusEquals) ||
@@ -159,6 +109,70 @@ private:
         }
 
         return node;
+    }
+
+    ExpressionNode if_()
+    {
+        if(accept(LexerRules.KeyIf))
+        {
+            return new IfNode(expression, ifBody, ifElse);
+        }
+
+        return ternary;
+    }
+
+    ExpressionNode ifBody()
+    {
+        if(front.line == last.line)
+        {
+            // Trailing colon separator.
+            expect(LexerRules.OpColon);
+
+            return expression;
+        }
+        else
+        {
+            ExpressionNode[] nodes;
+
+            while(!match(LexerRules.KeyEnd) &&
+                  !match(LexerRules.KeyElse))
+            {
+                nodes ~= expression;
+            }
+
+            return new ExpressionListNode(nodes);
+        }
+    }
+
+    ExpressionNode ifElse()
+    {
+        if(accept(LexerRules.KeyElse))
+        {
+            if(front.line == last.line)
+            {
+                // Optional trailing colon.
+                accept(LexerRules.OpColon);
+
+                return expression;
+            }
+            else
+            {
+                ExpressionNode[] nodes;
+
+                while(!accept(LexerRules.KeyEnd))
+                {
+                    nodes ~= expression;
+                }
+
+                return new ExpressionListNode(nodes);
+            }
+        }
+        else
+        {
+            expect(LexerRules.KeyEnd);
+
+            return null;
+        }
     }
 
     ExpressionNode ternary()
@@ -384,7 +398,7 @@ private:
         else
         {
             import std.conv;
-            assert(0, front.text);
+            assert(0, text(last) ~ " : " ~ text(front));
         }
     }
 }
