@@ -12,9 +12,7 @@ private:
 public:
     this(CraftClass superClass)
     {
-        super(ClassClass.value);
-
-        _superClass = superClass;
+        super(superClass);
     }
 
     final CraftObject method(string name)
@@ -25,7 +23,7 @@ public:
         {
             return *method;
         }
-        else if(superClass && this !is superClass)
+        else if(superClass)
         {
             return superClass.method(name);
         }
@@ -50,7 +48,7 @@ public:
         return null; // TODO
     }
 
-    final CraftClass superClass()
+    CraftClass superClass()
     {
         return _superClass;
     }
@@ -61,20 +59,25 @@ final class ClassClass : CraftClass
 private:
     static CraftClass CLASS;
 
-    static this()
-    {
-        CLASS = new ClassClass;
-    }
-
     this()
     {
-        super(this);
+        super(null);
     }
 
 public:
     @property
     static CraftClass value()
     {
+        if(CLASS is null)
+        {
+            CLASS = new ClassClass;
+        }
+
         return CLASS;
+    }
+
+    override CraftClass superClass()
+    {
+        return ObjectClass.value;
     }
 }

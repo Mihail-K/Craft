@@ -42,7 +42,7 @@ public:
         }
         else
         {
-            assert(0); // TODO
+            assert(0, name); // TODO
         }
     }
 
@@ -91,6 +91,16 @@ public:
         return invoke("opModulo", Arguments(other));
     }
 
+    final CraftObject opEqual(CraftObject other)
+    {
+        return invoke("opEqual", Arguments(other));
+    }
+
+    final CraftObject opNotEqual(CraftObject other)
+    {
+        return invoke("opNotEqual", Arguments(other));
+    }
+
     final CraftObject opIs(CraftObject other)
     {
         return CraftBoolean.create(this is other);
@@ -107,23 +117,31 @@ final class ObjectClass : CraftClass
 private:
     static CraftClass CLASS;
 
-    static this()
+    this()
+    {
+        super(null); // TODO
+    }
+
+    static void initialize()
     {
         CLASS = new ObjectClass;
 
         CLASS.method("invoke", new NativeMethod(1, true, &objectInvoke));
         CLASS.method("prod",   new NativeMethod(1, &objectProd));
-    }
 
-    this()
-    {
-        super(ClassClass.value);
+        CLASS.method("opEqual",    new NativeMethod(1, &objectEqual));
+        CLASS.method("opNotEqual", new NativeMethod(1, &objectNotEqual));
     }
 
 public:
     @property
     static CraftClass value()
     {
+        if(CLASS is null)
+        {
+            initialize;
+        }
+
         return CLASS;
     }
 }
@@ -143,5 +161,15 @@ private
         auto name = arguments[0].as!CraftString;
 
         return instance.prod(name.value);
+    }
+
+    CraftObject objectEqual(CraftObject instance, Arguments arguments)
+    {
+        return CraftBoolean.create(instance is arguments[0]);
+    }
+
+    CraftObject objectNotEqual(CraftObject instance, Arguments arguments)
+    {
+        return CraftBoolean.create(instance !is arguments[0]);
     }
 }

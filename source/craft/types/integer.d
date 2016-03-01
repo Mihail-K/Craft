@@ -47,7 +47,12 @@ final class IntegerClass : CraftClass
 private:
     static IntegerClass CLASS;
 
-    static this()
+    this()
+    {
+        super(ClassClass.value);
+    }
+
+    static void initialize()
     {
         CLASS = new IntegerClass;
 
@@ -61,17 +66,20 @@ private:
         CLASS.method("opMultiply", new NativeMethod(1, &integerMultiply));
         CLASS.method("opDivide",   new NativeMethod(1, &integerDivide));
         CLASS.method("opModulo",   new NativeMethod(1, &integerModulo));
-    }
 
-    this()
-    {
-        super(ClassClass.value);
+        CLASS.method("opEqual",    new NativeMethod(1, &integerEqual));
+        CLASS.method("opNotEqual", new NativeMethod(1, &integerNotEqual));
     }
 
 public:
     @property
-    static CraftClass value() nothrow
+    static CraftClass value()
     {
+        if(CLASS is null)
+        {
+            initialize;
+        }
+
         return CLASS;
     }
 }
@@ -142,5 +150,18 @@ private
         auto right = arguments[0].as!CraftInteger;
 
         return CraftInteger.create(left.value % right.value);
+    }
+
+    CraftObject integerEqual(CraftObject instance, Arguments arguments)
+    {
+        auto left  = instance.as!CraftInteger;
+        auto right = cast(CraftInteger) arguments[0];
+
+        return CraftBoolean.create(right && left.value == right.value);
+    }
+
+    CraftObject integerNotEqual(CraftObject instance, Arguments arguments)
+    {
+        return integerEqual(instance, arguments).opNegate;
     }
 }

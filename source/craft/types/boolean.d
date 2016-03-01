@@ -40,7 +40,7 @@ public:
 
     override string toString()
     {
-        return "Boolean(%s)";
+        return "Boolean(%s)".format(value);
     }
 }
 
@@ -49,23 +49,33 @@ final class BooleanClass : CraftClass
 private:
     static CraftClass CLASS;
 
-    static this()
+    this()
+    {
+        super(null);
+    }
+
+    static void initialize()
     {
         CLASS = new BooleanClass;
 
         CLASS.method("opNegate", new NativeMethod(0, &booleanNegate));
     }
 
-    this()
-    {
-        super(ClassClass.value);
-    }
-
 public:
     @property
-    static CraftClass value() nothrow
+    static CraftClass value()
     {
+        if(CLASS is null)
+        {
+            initialize;
+        }
+
         return CLASS;
+    }
+
+    override CraftClass superClass()
+    {
+        return ClassClass.value;
     }
 }
 

@@ -38,6 +38,37 @@ class Interpreter : NullVisitor
         return value;
     }
 
+    override CraftObject visit(BooleanNode node)
+    {
+        return CraftBoolean.create(node.token.text.to!bool);
+    }
+
+    override CraftObject visit(EqualityNode node)
+    {
+        auto value = node.nodes.front.accept!(CraftObject)(this);
+
+        foreach(operator, operand; node.operators.lockstep(node.nodes.dropOne))
+        {
+            auto other = operand.accept!(CraftObject)(this);
+
+            switch(operator.text)
+            {
+                case "==": // OpEqual
+                    value = value.opEqual(other);
+                    break;
+
+                case "!=": // OpNotEqual
+                    value = value.opNotEqual(other);
+                    break;
+
+                default:
+                    assert(0);
+            }
+        }
+
+        return value;
+    }
+
     override CraftObject visit(IntegerNode node)
     {
         return CraftInteger.create(node.token.text.to!long);
