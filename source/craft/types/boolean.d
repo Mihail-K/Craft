@@ -53,12 +53,12 @@ private:
     {
         CLASS = new BooleanClass;
 
-        CLASS.method("opNegate",     new NativeMethod(0, &booleanNegate));
+        CLASS.method("opNegate", new NativeMethod(0, &booleanNegate));
     }
 
     this()
     {
-        super(this);
+        super(ClassClass.value);
     }
 
 public:

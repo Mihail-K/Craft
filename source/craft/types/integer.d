@@ -65,7 +65,7 @@ private:
 
     this()
     {
-        super(this);
+        super(ClassClass.value);
     }
 
 public:

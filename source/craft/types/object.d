@@ -17,6 +17,11 @@ protected:
     CraftClass _class;
 
 public:
+    this()
+    {
+        _class = ObjectClass.value;
+    }
+
     this(CraftClass class_)
     {
         _class = class_;
@@ -112,7 +117,7 @@ private:
 
     this()
     {
-        super(this);
+        super(ClassClass.value);
     }
 
 public:

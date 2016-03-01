@@ -6,13 +6,11 @@ import craft.types;
 class CraftClass : CraftObject
 {
 private:
-    CraftObject _superClass;
-
-protected:
     CraftObject[string] _methods;
+    CraftClass          _superClass;
 
 public:
-    this(CraftObject superClass)
+    this(CraftClass superClass)
     {
         super(ClassClass.value);
 
@@ -26,6 +24,10 @@ public:
         if(method !is null)
         {
             return *method;
+        }
+        else if(superClass && this !is superClass)
+        {
+            return superClass.method(name);
         }
         else
         {
@@ -48,7 +50,7 @@ public:
         return null; // TODO
     }
 
-    final CraftObject superClass()
+    final CraftClass superClass()
     {
         return _superClass;
     }
