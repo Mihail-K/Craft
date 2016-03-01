@@ -23,11 +23,11 @@ class Interpreter : NullVisitor
             switch(operator.text)
             {
                 case "+": // OpPlus
-                    value = value.opPlus(other);
+                    value = value.opAdd(other);
                     break;
 
                 case "-": // OpMinus
-                    value = value.opMinus(other);
+                    value = value.opSubtract(other);
                     break;
 
                 default:
@@ -40,9 +40,7 @@ class Interpreter : NullVisitor
 
     override CraftObject visit(IntegerNode node)
     {
-        auto value = node.token.text;
-
-        return new CraftInteger(value.to!long);
+        return CraftInteger.create(node.token.text.to!long);
     }
 
     override CraftObject visit(MultiplicationNode node)
@@ -56,7 +54,7 @@ class Interpreter : NullVisitor
             switch(operator.text)
             {
                 case "*": // OpTimes
-                    value = value.opTimes(other);
+                    value = value.opMultiply(other);
                     break;
 
                 case "/": // OpDivide
