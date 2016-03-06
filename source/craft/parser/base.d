@@ -403,12 +403,17 @@ private:
     {
         auto node = terminal;
 
-        while(accept(LexerRules.OpPlusPlus) ||
+        while(accept(LexerRules.OpDot) ||
+              accept(LexerRules.OpPlusPlus) ||
               accept(LexerRules.OpMinusMinus) ||
               accept(LexerRules.OpParenLeft) ||
               accept(LexerRules.OpBracketLeft))
         {
-            if(last.rule == "OpParenLeft")
+            if(last.rule == "OpDot")
+            {
+                node = new AccessNode(node, last, identifier);
+            }
+            else if(last.rule == "OpParenLeft")
             {
                 auto paren = last;
                 ExpressionListNode args;
@@ -439,6 +444,24 @@ private:
         }
 
         return node;
+    }
+
+    IdentifierNode identifier()
+    {
+        if(accept(LexerRules.IdentifierLower))
+        {
+            return new IdentifierNode.Lower(last);
+        }
+        else if(accept(LexerRules.IdentifierUpper))
+        {
+            return new IdentifierNode.Upper(last);
+        }
+        else
+        {
+            expect(LexerRules.IdentifierDollar); // TODO
+
+            return new IdentifierNode.Dollar(last);
+        }
     }
 
     ExpressionNode terminal()

@@ -12,6 +12,14 @@ import std.range;
 
 class Interpreter : NullVisitor
 {
+    override CraftObject *visit(AccessNode node)
+    {
+        auto left  = node.node.accept!(CraftObject *)(this);
+        auto right = node.member.token.text;
+
+        return left.invoke(right);
+    }
+
     override CraftObject *visit(AdditionNode node)
     {
         auto value = node.nodes.front.accept!(CraftObject *)(this);

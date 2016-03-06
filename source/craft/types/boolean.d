@@ -2,141 +2,135 @@
 module craft.types.boolean;
 
 import craft.types;
+import craft.types.object;
 
 import std.variant;
 
 /+ - Boolean Class - +/
 
-__gshared CraftObject TRUE_CLASS;
-__gshared CraftObject FALSE_CLASS;
+__gshared CraftType TRUE_TYPE;
+__gshared CraftType FALSE_TYPE;
 
 shared static this()
 {
-    with(TRUE_CLASS)
-    {
-        class_ = &CLASS_CLASS;  // True.class => Class
-        super_ = &OBJECT_CLASS; // True.super => Object
+    // class True : Object
+    CraftType *t = &TRUE_TYPE;
+    TRUE_TYPE = CraftType("True", &OBJECT_TYPE);
 
-        data["name"] = "True";
+    /+ - Instance Methods - +/
+
+    t.instanceMethods["$!"] = native(0, &true_instance_not);
+    t.instanceMethods["&&"] = native(1, &true_instance_and);
+    t.instanceMethods["&"]  = native(1, &true_instance_and);
+    t.instanceMethods["||"] = native(1, &true_instance_or);
+    t.instanceMethods["|"]  = native(1, &true_instance_or);
+    t.instanceMethods["^"]  = native(1, &true_instance_xor);
+
+    t.instanceMethods["string"] = native(0, &true_instance_string);
+}
+
+private
+{
+    CraftObject *true_instance_and(CraftObject *, Arguments arguments)
+    {
+        return arguments[0];
     }
 
-    with(FALSE_CLASS)
+    CraftObject *true_instance_not(CraftObject *, Arguments)
     {
-        class_ = &CLASS_CLASS;  // False.class => Class
-        super_ = &OBJECT_CLASS; // False.super => Object
+        return &FALSE;
+    }
 
-        data["name"] = "False";
+    CraftObject *true_instance_or(CraftObject *instance, Arguments)
+    {
+        return instance;
+    }
+
+    CraftObject *true_instance_string(CraftObject *, Arguments)
+    {
+        return createString("true");
+    }
+
+    CraftObject *true_instance_xor(CraftObject *, Arguments arguments)
+    {
+        return arguments[0].coerce!bool ? &FALSE : &TRUE;
+    }
+}
+
+shared static this()
+{
+    // class False : Object
+    CraftType *t = &FALSE_TYPE;
+    FALSE_TYPE = CraftType("False", &OBJECT_TYPE);
+
+    /+ - Instance Methods - +/
+
+    t.instanceMethods["$!"] = native(0, &false_instance_not);
+    t.instanceMethods["&&"] = native(1, &false_instance_and);
+    t.instanceMethods["&"]  = native(1, &false_instance_and);
+    t.instanceMethods["||"] = native(1, &false_instance_or);
+    t.instanceMethods["|"]  = native(1, &false_instance_or);
+    t.instanceMethods["^"]  = native(1, &false_instance_xor);
+
+    t.instanceMethods["string"] = native(0, &false_instance_string);
+}
+
+private
+{
+    CraftObject *false_instance_and(CraftObject *instance, Arguments)
+    {
+        return instance;
+    }
+
+    CraftObject *false_instance_not(CraftObject *, Arguments)
+    {
+        return &TRUE;
+    }
+
+    CraftObject *false_instance_or(CraftObject *, Arguments arguments)
+    {
+        return arguments[0];
+    }
+
+    CraftObject *false_instance_string(CraftObject *, Arguments)
+    {
+        return createString("false");
+    }
+
+    CraftObject *false_instance_xor(CraftObject *, Arguments arguments)
+    {
+        return arguments[0].coerce!bool ? &TRUE : &FALSE;
     }
 }
 
 /+ - Boolean Instance - +/
 
-__gshared CraftObject BOOLEAN_TRUE;
-__gshared CraftObject BOOLEAN_FALSE;
+__gshared CraftObject TRUE;
+__gshared CraftObject FALSE;
 
 shared static this()
 {
-    BOOLEAN_TRUE = CraftObject(&TRUE_CLASS, createObject);
-
-    with(BOOLEAN_TRUE)
-    {
-        methods["$!"] = native(0, &true_not);
-        methods["&&"] = native(1, &true_and);
-        methods["&"] = native(1, &true_and);
-        methods["||"] = native(1, &true_or);
-        methods["|"] = native(1, &true_or);
-        methods["^"]  = native(1, &true_xor);
-
-        methods["string"] = native(0, &true_string);
-    }
+    TRUE = TRUE_TYPE.allocInstance;
 }
 
 shared static this()
 {
-    BOOLEAN_FALSE = CraftObject(&FALSE_CLASS, createObject);
-
-    with(BOOLEAN_FALSE)
-    {
-        methods["$!"] = native(0, &false_not);
-        methods["&&"] = native(1, &false_and);
-        methods["&"] = native(1, &false_and);
-        methods["||"] = native(1, &false_or);
-        methods["|"] = native(1, &false_or);
-        methods["^"]  = native(1, &false_xor);
-
-        methods["string"] = native(0, &false_string);
-    }
+    FALSE = FALSE_TYPE.allocInstance;
 }
 
 CraftObject *createBoolean(bool value)
 {
-    return value ? &BOOLEAN_TRUE : &BOOLEAN_FALSE;
-}
-
-private
-{
-    CraftObject *true_and(CraftObject *, Arguments arguments)
-    {
-        return arguments[0];
-    }
-
-    CraftObject *true_not(CraftObject *, Arguments)
-    {
-        return &BOOLEAN_FALSE;
-    }
-
-    CraftObject *true_or(CraftObject *instance, Arguments)
-    {
-        return instance;
-    }
-
-    CraftObject *true_string(CraftObject *, Arguments)
-    {
-        return createString("true");
-    }
-
-    CraftObject *true_xor(CraftObject *, Arguments arguments)
-    {
-        return arguments[0].coerce!bool ? &BOOLEAN_FALSE : &BOOLEAN_TRUE;
-    }
-}
-
-private
-{
-    CraftObject *false_and(CraftObject *instance, Arguments)
-    {
-        return instance;
-    }
-
-    CraftObject *false_not(CraftObject *, Arguments)
-    {
-        return &BOOLEAN_TRUE;
-    }
-
-    CraftObject *false_or(CraftObject *, Arguments arguments)
-    {
-        return arguments[0];
-    }
-
-    CraftObject *false_string(CraftObject *, Arguments)
-    {
-        return createString("false");
-    }
-
-    CraftObject *false_xor(CraftObject *, Arguments arguments)
-    {
-        return arguments[0].coerce!bool ? &BOOLEAN_TRUE : &BOOLEAN_FALSE;
-    }
+    return value ? &TRUE : &FALSE;
 }
 
 @property
 T as(T)(CraftObject *instance) if(is(T == bool))
 {
-    if(instance.isExactType(&TRUE_CLASS))
+    if(instance.isExactType(&TRUE_TYPE))
     {
         return true;
     }
-    else if(instance.isExactType(&FALSE_CLASS))
+    else if(instance.isExactType(&FALSE_TYPE))
     {
         return false;
     }
@@ -149,5 +143,5 @@ T as(T)(CraftObject *instance) if(is(T == bool))
 @property
 T coerce(T)(CraftObject *instance) if(is(T == bool))
 {
-    return !instance.isExactType(&FALSE_CLASS);
+    return !instance.isExactType(&FALSE_TYPE);
 }

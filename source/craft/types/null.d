@@ -2,19 +2,61 @@
 module craft.types.null_;
 
 import craft.types;
+import craft.types.object;
 
-/+ - Null Class - +/
+/+ - Null Type - +/
 
-__gshared CraftObject NULL_CLASS;
+__gshared CraftType NULL_TYPE;
 
 shared static this()
 {
-    with(NULL_CLASS)
-    {
-        class_ = &CLASS_CLASS;  // Null.class => Class
-        super_ = &OBJECT_CLASS; // Null.super => Object
+    // class Null : Object
+    CraftType *t = &NULL_TYPE;
+    NULL_TYPE = CraftType("Null", &OBJECT_TYPE);
 
-        data["name"] = "Null";
+    /+ - Instance Methods - +/
+
+    t.instanceMethods["$!"] = native(0, &null_instance_not);
+    t.instanceMethods["&&"] = native(1, &null_instance_and);
+    t.instanceMethods["&"]  = native(1, &null_instance_and);
+    t.instanceMethods["||"] = native(1, &null_instance_or);
+    t.instanceMethods["|"]  = native(1, &null_instance_or);
+    t.instanceMethods["^"]  = native(1, &null_instance_xor);
+
+    t.instanceMethods["hash_id"] = native(0, &null_instance_hashId);
+    t.instanceMethods["string"]  = native(0, &null_instance_string);
+}
+
+private
+{
+    CraftObject *null_instance_and(CraftObject *instance, Arguments)
+    {
+        return instance;
+    }
+
+    CraftObject *null_instance_hashId(CraftObject *, Arguments)
+    {
+        return createInteger(0);
+    }
+
+    CraftObject *null_instance_not(CraftObject *instance, Arguments)
+    {
+        return &TRUE;
+    }
+
+    CraftObject *null_instance_or(CraftObject *instance, Arguments arguments)
+    {
+        return arguments[0];
+    }
+
+    CraftObject *null_instance_string(CraftObject *, Arguments)
+    {
+        return createString("null");
+    }
+
+    CraftObject *null_instance_xor(CraftObject *instance, Arguments arguments)
+    {
+        return arguments[0].coerce!bool ? &TRUE : &FALSE;
     }
 }
 
@@ -24,51 +66,5 @@ __gshared CraftObject NULL;
 
 shared static this()
 {
-    NULL = CraftObject(&NULL_CLASS, createObject);
-
-    with(NULL)
-    {
-        methods["$!"] = native(0, &null_not);
-        methods["&&"] = native(1, &null_and);
-        methods["&"]  = native(1, &null_and);
-        methods["||"] = native(1, &null_or);
-        methods["|"]  = native(1, &null_or);
-        methods["^"]  = native(1, &null_xor);
-
-        methods["hash_id"] = native(0, &null_hashId);
-        methods["string"]  = native(0, &null_string);
-    }
-}
-
-private
-{
-    CraftObject *null_and(CraftObject *instance, Arguments)
-    {
-        return instance;
-    }
-
-    CraftObject *null_hashId(CraftObject *, Arguments)
-    {
-        return createInteger(0);
-    }
-
-    CraftObject *null_not(CraftObject *instance, Arguments)
-    {
-        return &BOOLEAN_TRUE;
-    }
-
-    CraftObject *null_or(CraftObject *instance, Arguments arguments)
-    {
-        return arguments[0];
-    }
-
-    CraftObject *null_string(CraftObject *, Arguments)
-    {
-        return createString("null");
-    }
-
-    CraftObject *null_xor(CraftObject *instance, Arguments arguments)
-    {
-        return arguments[0].coerce!bool ? &BOOLEAN_TRUE : &BOOLEAN_FALSE;
-    }
+    NULL = NULL_TYPE.allocInstance;
 }

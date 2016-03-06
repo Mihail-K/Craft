@@ -2,43 +2,38 @@
 module craft.types.class_;
 
 import craft.types;
+import craft.types.object;
 
-import std.variant;
+/+ - Class Type - +/
 
-/+ - Class Class - +/
-
-__gshared CraftObject CLASS_CLASS;
+__gshared CraftType CLASS_TYPE;
 
 shared static this()
 {
-    with(CLASS_CLASS)
-    {
-        class_ = &CLASS_CLASS;  // Class.class => Class
-        super_ = &OBJECT_CLASS; // Class.super => Object
+    CraftType *t = &CLASS_TYPE;
+    CLASS_TYPE = CraftType("Class", &OBJECT_TYPE);
 
-        data["name"] = Variant("Class");
+    /+ - Instance Methods - +/
 
-        methods["class"]  = native(0, &class_class);
-        methods["name"]   = native(0, &class_name);
-        methods["super"]  = native(0, &class_super);
-        methods["string"] = native(0, &class_name);
-    }
+    t.instanceMethods["name"]   = native(0, &class_instance_name);
+    t.instanceMethods["string"] = native(0, &class_instance_name);
 }
 
 private
 {
-    CraftObject *class_class(CraftObject *instance, Arguments)
+    CraftObject *class_instance_name(CraftObject *instance, Arguments)
     {
-        return instance.class_;
+        return instance.getData("type").get!(CraftType *).name.createString;
     }
+}
 
-    CraftObject *class_name(CraftObject *instance, Arguments)
-    {
-        return instance.data["name"].get!string.createString;
-    }
+/+ - Class Instance - +/
 
-    CraftObject *class_super(CraftObject *instance, Arguments)
-    {
-        return instance.super_;
-    }
+CraftObject *createClass(CraftType *type)
+{
+    auto instance = CLASS_TYPE.createInstance;
+
+    instance.data["type"] = type;
+
+    return instance;
 }

@@ -1,6 +1,7 @@
 
 module craft.ast;
 
+public import craft.ast.access;
 public import craft.ast.addition;
 public import craft.ast.assignment;
 public import craft.ast.base;

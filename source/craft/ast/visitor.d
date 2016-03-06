@@ -7,6 +7,8 @@ import std.typecons;
 
 interface Visitor
 {
+    void *visit(AccessNode node);
+
     void *visit(AdditionNode node);
 
     void *visit(AssignmentNode node);

@@ -5,35 +5,86 @@ import craft.types;
 
 import std.variant;
 
-struct CraftObject
+struct CraftType
 {
+    string name;
+
     CraftObject *class_;
-    CraftObject *super_;
 
-    Variant[string]     data;
-    CraftField[string]  fields;
-    CraftMethod[string] methods;
+    CraftMethod[string] instanceMethods;
+    CraftMethod[string] staticMethods;
 
-    this(CraftObject *class_, CraftObject *super_ = null)
+    CraftType *superType;
+
+    this(string name, CraftType *superType = null)
     {
-        this.class_ = class_;
-        this.super_ = super_;
+        this.name      = name;
+        this.superType = superType;
     }
 
-    string toString()
+    CraftObject allocInstance(Arguments arguments = Arguments())
     {
-        import std.conv : text;
-        return "CraftObject(" ~ class_.text ~ ")";
+        auto instance = CraftObject(&this);
+
+        instance.methods = instanceMethods;
+        auto ptr = "this" in instance.methods;
+
+        if(ptr !is null)
+        {
+            // Call constructor if present.
+            ptr.invoke(&instance, arguments);
+        }
+
+        // Check if a parent type is defined.
+        if(superType && instance.super_ is null)
+        {
+            // Call the parent type's constructor.
+            instance.super_ = superType.createInstance(arguments);
+        }
+
+        return instance;
+    }
+
+    CraftObject *createInstance(Arguments arguments = Arguments())
+    {
+        auto instance = new CraftObject;
+
+        *instance = allocInstance(arguments);
+
+        return instance;
+    }
+
+    @property
+    CraftObject *getClass()
+    {
+        if(class_ is null)
+        {
+            class_ = createClass(&this);
+            class_.data["name"] = name;
+        }
+
+        return class_;
     }
 }
 
-struct CraftField
+struct CraftObject
 {
-    CraftObject *value;
+    CraftType   *type;
+    CraftObject *super_;
 
-    this(CraftObject *value)
+    Variant[string]     data;
+    CraftMethod[string] methods;
+
+    this(CraftType *type, CraftObject *super_ = null)
     {
-        this.value = value;
+        this.type   = type;
+        this.super_ = super_;
+    }
+
+    @property
+    CraftObject *class_()
+    {
+        return type.getClass;
     }
 }
 
@@ -73,14 +124,14 @@ CraftObject *invoke(CraftObject *instance, string name, Arguments arguments = Ar
     assert(0, "No such method " ~ name); // TODO
 }
 
-bool isExactType(CraftObject *instance, CraftObject *type)
+bool isExactType(CraftObject *instance, CraftType *type)
 {
     assert(instance, "Object instance is null.");
 
-    return instance.class_ == type;
+    return instance.type == type;
 }
 
-bool isChildType(CraftObject *instance, CraftObject *type)
+bool isChildType(CraftObject *instance, CraftType *type)
 {
     if(instance.isExactType(type))
     {
