@@ -3,165 +3,84 @@ module craft.types.integer;
 
 import craft.types;
 
-import std.string;
+import std.conv;
+import std.meta;
+import std.variant;
 
-class CraftInteger : CraftObject
+/+ - Integer Class - +/
+
+static CraftObject INTEGER_CLASS;
+
+shared static this()
 {
-private:
-    static CraftInteger ZERO;
-
-    static this()
+    with(INTEGER_CLASS)
     {
-        ZERO = new CraftInteger(0);
-    }
+        class_ = &CLASS_CLASS;  // Integer.class => Class
+        super_ = &OBJECT_CLASS; // Integer.super => Object
 
-    long _value;
-
-    this(long value)
-    {
-        super(IntegerClass.value);
-
-        _value = value;
-    }
-
-public:
-    static CraftInteger create(long value)
-    {
-        return value ? new CraftInteger(value) : ZERO;
-    }
-
-    @property
-    long value() inout nothrow
-    {
-        return _value;
-    }
-
-    override string toString()
-    {
-        return "Integer(%s)".format(value);
+        data["name"] = Variant("Integer");
     }
 }
 
-final class IntegerClass : CraftClass
+/+ - Integer Instance - +/
+
+alias UnaryOps  = Alias!("+", "-", /*"!",*/ "~");
+alias BinaryOps = Alias!("+", "-", "*", "/", "%", "<<", ">>");
+
+CraftObject *createInteger(long value)
 {
-private:
-    static IntegerClass CLASS;
+    auto obj = new CraftObject(&INTEGER_CLASS, createObject);
 
-    this()
+    obj.data["raw"] = Variant(value);
+
+    foreach(op; UnaryOps)
     {
-        super(ClassClass.value);
+        obj.methods["$" ~ op] = native(0, &integer_opUnary!(op));
     }
 
-    static void initialize()
+    foreach(op; BinaryOps)
     {
-        CLASS = new IntegerClass;
-
-        CLASS.method("opPlus",       new NativeMethod(0, &integerPlus));
-        CLASS.method("opMinus",      new NativeMethod(0, &integerMinus));
-        CLASS.method("opNegate",     new NativeMethod(0, &integerNegate));
-        CLASS.method("opComplement", new NativeMethod(0, &integerComplement));
-
-        CLASS.method("opAdd",      new NativeMethod(1, &integerAdd));
-        CLASS.method("opSubtract", new NativeMethod(1, &integerSubtract));
-        CLASS.method("opMultiply", new NativeMethod(1, &integerMultiply));
-        CLASS.method("opDivide",   new NativeMethod(1, &integerDivide));
-        CLASS.method("opModulo",   new NativeMethod(1, &integerModulo));
-
-        CLASS.method("opEqual",    new NativeMethod(1, &integerEqual));
-        CLASS.method("opNotEqual", new NativeMethod(1, &integerNotEqual));
+        obj.methods[op] = native(1, &integer_opBinary!(op));
     }
 
-public:
-    @property
-    static CraftClass value()
-    {
-        if(CLASS is null)
-        {
-            initialize;
-        }
+    obj.methods["string"] = native(0, &integer_string);
 
-        return CLASS;
-    }
+    return obj;
+}
+
+@property
+long toNativeInteger(CraftObject *obj)
+{
+    assert(obj, "Integer reference is null.");
+    assert(obj.class_ == &INTEGER_CLASS, "Object is not an integer."); // TODO
+
+    return obj.data["raw"].get!long;
 }
 
 private
 {
-    /+ - Unary Operations - +/
-
-    CraftObject integerPlus(CraftObject instance, Arguments arguments)
+    CraftObject *integer_opUnary(string op : "+")(CraftObject *instance, Arguments)
     {
         return instance;
     }
 
-    CraftObject integerMinus(CraftObject instance, Arguments arguments)
+    CraftObject *integer_opUnary(string op)(CraftObject *instance, Arguments)
     {
-        return CraftInteger.create(-instance.as!CraftInteger.value);
+        long value = instance.toNativeInteger;
+
+        return createInteger(mixin(op ~ "value"));
     }
 
-    CraftObject integerNegate(CraftObject instance, Arguments arguments)
+    CraftObject *integer_opBinary(string op)(CraftObject *instance, Arguments arguments)
     {
-        return CraftBoolean.create(!instance.as!CraftInteger.value);
+        long left  = instance.toNativeInteger;
+        long right = arguments[0].toNativeInteger;
+
+        return createInteger(mixin("left " ~ op ~ " right"));
     }
 
-    CraftObject integerComplement(CraftObject instance, Arguments arguments)
+    CraftObject *integer_string(CraftObject *instance, Arguments)
     {
-        return CraftInteger.create(~instance.as!CraftInteger.value);
-    }
-
-    /+ - Addition Operations - +/
-
-    CraftObject integerAdd(CraftObject instance, Arguments arguments)
-    {
-        auto left  = instance.as!CraftInteger;
-        auto right = arguments[0].as!CraftInteger;
-
-        return CraftInteger.create(left.value + right.value);
-    }
-
-    CraftObject integerSubtract(CraftObject instance, Arguments arguments)
-    {
-        auto left  = instance.as!CraftInteger;
-        auto right = arguments[0].as!CraftInteger;
-
-        return CraftInteger.create(left.value - right.value);
-    }
-
-    /+ - Multiplication Operations - +/
-
-    CraftObject integerMultiply(CraftObject instance, Arguments arguments)
-    {
-        auto left  = instance.as!CraftInteger;
-        auto right = arguments[0].as!CraftInteger;
-
-        return CraftInteger.create(left.value * right.value);
-    }
-
-    CraftObject integerDivide(CraftObject instance, Arguments arguments)
-    {
-        auto left  = instance.as!CraftInteger;
-        auto right = arguments[0].as!CraftInteger;
-
-        return CraftInteger.create(left.value / right.value);
-    }
-
-    CraftObject integerModulo(CraftObject instance, Arguments arguments)
-    {
-        auto left  = instance.as!CraftInteger;
-        auto right = arguments[0].as!CraftInteger;
-
-        return CraftInteger.create(left.value % right.value);
-    }
-
-    CraftObject integerEqual(CraftObject instance, Arguments arguments)
-    {
-        auto left  = instance.as!CraftInteger;
-        auto right = cast(CraftInteger) arguments[0];
-
-        return CraftBoolean.create(right && left.value == right.value);
-    }
-
-    CraftObject integerNotEqual(CraftObject instance, Arguments arguments)
-    {
-        return integerEqual(instance, arguments).opNegate;
+        return instance.toNativeInteger.to!string.createString;
     }
 }

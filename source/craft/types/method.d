@@ -3,68 +3,82 @@ module craft.types.method;
 
 import craft.types;
 
-import std.algorithm;
-import std.array;
-import std.conv;
-import std.meta;
-import std.range;
-import std.string;
-import std.traits;
-
-abstract class CraftMethod : CraftObject
+enum Kind : uint
 {
-private:
-    uint _arity;
-    bool _varargs;
+    NATIVE,
+    CRAFT
+}
 
-public:
-    this(uint arity, bool varargs = false)
+struct Arguments
+{
+    CraftObject *[] arguments;
+
+    this(CraftObject *[] arguments...)
     {
-        super(null);
-
-        _arity   = arity;
-        _varargs = varargs;
+        this.arguments = arguments.dup;
     }
 
-    @property
-    uint arity()
+    size_t length() inout nothrow
     {
-        return _arity;
+        return arguments.length;
     }
 
-    abstract CraftObject call(CraftObject instance, Arguments args);
+    alias opDollar = length;
 
-    @property
-    bool varargs()
+    auto opIndex(size_t index)
     {
-        return _varargs;
+        return arguments[index];
+    }
+
+    auto opSlice(size_t start, size_t stop)
+    {
+        return arguments[start .. stop];
     }
 }
 
-final class NativeMethod : CraftMethod
+struct CraftMethod
 {
-private:
-    CraftObject function(CraftObject, Arguments) _method;
+    uint  arity;
+    Kind  kind;
+    void *method;
+    bool  varargs;
 
-public:
-    this(uint arity, CraftObject function(CraftObject, Arguments) method)
+    this(uint arity, Kind kind, void *method, bool varargs = false)
     {
-        super(arity, false);
-
-        _method = method;
+        this.arity   = arity;
+        this.kind    = kind;
+        this.method  = method;
+        this.varargs = varargs;
     }
 
-    this(uint arity, bool varargs, CraftObject function(CraftObject, Arguments) method)
+    CraftObject *invoke(CraftObject *instance, Arguments arguments)
     {
-        super(arity, varargs);
+        assert(instance, "Invoking instance is null.");
 
-        _method = method;
+        if(varargs)
+        {
+            assert(arguments.length >= arity, "Argument count mismatch.");
+        }
+        else
+        {
+            assert(arguments.length == arity, "Argument count mismatch.");
+        }
+
+        if(kind == Kind.NATIVE)
+        {
+            auto callable = cast(CraftObject *function(CraftObject *, Arguments)) method;
+            assert(callable, "Native callable reference is null.");
+
+            return callable(instance, arguments);
+        }
+        else
+        {
+            assert(0, "Craft Kind."); // TODO
+        }
     }
+}
 
-    override CraftObject call(CraftObject instance, Arguments arguments)
-    {
-        arguments.ensure(arity, varargs);
-
-        return _method(instance, arguments);
-    }
+CraftMethod native(uint arity, void *method, bool varargs = false)
+{
+    return CraftMethod(arity, Kind.NATIVE, method, varargs);
 }

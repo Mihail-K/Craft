@@ -3,81 +3,42 @@ module craft.types.class_;
 
 import craft.types;
 
-class CraftClass : CraftObject
+import std.variant;
+
+/+ - Class Class - +/
+
+__gshared CraftObject CLASS_CLASS;
+
+shared static this()
 {
-private:
-    CraftObject[string] _methods;
-    CraftClass          _superClass;
-
-public:
-    this(CraftClass superClass)
+    with(CLASS_CLASS)
     {
-        super(superClass);
-    }
+        class_ = &CLASS_CLASS;  // Class.class => Class
+        super_ = &OBJECT_CLASS; // Class.super => Object
 
-    final CraftObject method(string name)
-    {
-        auto method = name in _methods;
+        data["name"] = Variant("Class");
 
-        if(method !is null)
-        {
-            return *method;
-        }
-        else if(superClass)
-        {
-            return superClass.method(name);
-        }
-        else
-        {
-            return null; // TODO
-        }
-    }
-
-    final CraftObject method(string name, CraftMethod method)
-    {
-        return _methods[name] = method, this;
-    }
-
-    CraftObject methods()
-    {
-        return null; // TODO
-    }
-
-    CraftObject name()
-    {
-        return null; // TODO
-    }
-
-    CraftClass superClass()
-    {
-        return _superClass;
+        methods["class"]  = native(0, &class_class);
+        methods["name"]   = native(0, &class_name);
+        methods["super"]  = native(0, &class_super);
+        methods["string"] = native(0, &class_name);
     }
 }
 
-final class ClassClass : CraftClass
+private
 {
-private:
-    static CraftClass CLASS;
-
-    this()
+    CraftObject *class_class(CraftObject *instance, Arguments)
     {
-        super(null);
+        return instance.class_;
     }
 
-public:
-    @property
-    static CraftClass value()
+    CraftObject *class_name(CraftObject *instance, Arguments)
     {
-        if(CLASS is null)
-        {
-            CLASS = new ClassClass;
-        }
-
-        return CLASS;
+        return instance.data["name"].get!string.createString;
     }
 
-    override CraftClass superClass()
+    CraftObject *class_super(CraftObject *instance, Arguments)
     {
-        return ObjectClass.value;
+        return instance.super_;
     }
 }

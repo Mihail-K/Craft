@@ -12,13 +12,13 @@ import std.range;
 
 class Interpreter : NullVisitor
 {
-    override CraftObject visit(AdditionNode node)
+    override CraftObject *visit(AdditionNode node)
     {
-        auto value = node.nodes.front.accept!(CraftObject)(this);
+        auto value = node.nodes.front.accept!(CraftObject *)(this);
 
         foreach(operator, operand; node.operators.lockstep(node.nodes.dropOne))
         {
-            auto other = operand.accept!(CraftObject)(this);
+            auto other = operand.accept!(CraftObject *)(this);
 
             switch(operator.text)
             {
@@ -27,7 +27,7 @@ class Interpreter : NullVisitor
                     break;
 
                 case "-": // OpMinus
-                    value = value.opSubtract(other);
+                    value = value.opSub(other);
                     break;
 
                 default:
@@ -38,28 +38,29 @@ class Interpreter : NullVisitor
         return value;
     }
 
-    override CraftObject visit(BooleanNode node)
+    override CraftObject *visit(BooleanNode node)
     {
-        return CraftBoolean.create(node.token.text.to!bool);
+        /*return CraftBoolean.create(node.token.text.to!bool);*/
+        return null;
     }
 
-    override CraftObject visit(EqualityNode node)
+    override CraftObject *visit(EqualityNode node)
     {
-        auto value = node.nodes.front.accept!(CraftObject)(this);
+        auto value = node.nodes.front.accept!(CraftObject *)(this);
 
         foreach(operator, operand; node.operators.lockstep(node.nodes.dropOne))
         {
-            auto other = operand.accept!(CraftObject)(this);
+            auto other = operand.accept!(CraftObject *)(this);
 
             switch(operator.text)
             {
-                case "==": // OpEqual
+                /*case "==": // OpEqual
                     value = value.opEqual(other);
                     break;
 
                 case "!=": // OpNotEqual
                     value = value.opNotEqual(other);
-                    break;
+                    break;*/
 
                 default:
                     assert(0);
@@ -69,22 +70,22 @@ class Interpreter : NullVisitor
         return value;
     }
 
-    override CraftObject visit(IntegerNode node)
+    override CraftObject *visit(IntegerNode node)
     {
-        return CraftInteger.create(node.token.text.to!long);
+        return createInteger(node.token.text.to!long);
     }
 
-    override CraftObject visit(MultiplicationNode node)
+    override CraftObject *visit(MultiplicationNode node)
     {
-        auto value = node.nodes.front.accept!(CraftObject)(this);
+        auto value = node.nodes.front.accept!(CraftObject *)(this);
 
         foreach(operator, operand; node.operators.lockstep(node.nodes.dropOne))
         {
-            auto other = operand.accept!(CraftObject)(this);
+            auto other = operand.accept!(CraftObject *)(this);
 
             switch(operator.text)
             {
-                case "*": // OpTimes
+                /*case "*": // OpTimes
                     value = value.opMultiply(other);
                     break;
 
@@ -94,7 +95,7 @@ class Interpreter : NullVisitor
 
                 case "%": // OpModulo
                     value = value.opModulo(other);
-                    break;
+                    break;*/
 
                 default:
                     assert(0);
@@ -104,9 +105,9 @@ class Interpreter : NullVisitor
         return value;
     }
 
-    override CraftObject visit(PrefixNode node)
+    override CraftObject *visit(PrefixNode node)
     {
-        auto value = node.node.accept!(CraftObject)(this);
+        auto value = node.node.accept!(CraftObject *)(this);
 
         switch(node.operator.text)
         {
@@ -116,22 +117,27 @@ class Interpreter : NullVisitor
             case "-": // OpMinus
                 return value.opMinus;
 
-            case "~": // OpTilde
+            /*case "~": // OpTilde
                 return value.opComplement;
 
             case "!": // OpBang
-                return value.opNegate;
+                return value.opNegate;*/
 
             default:
                 assert(0);
         }
     }
 
-    override CraftObject visit(StartNode node)
+    override CraftObject *visit(StartNode node)
     {
         return node.nodes
-            .map!(n => n.accept!(CraftObject)(this))
+            .map!(n => n.accept!(CraftObject *)(this))
             .retro
             .front;
+    }
+
+    override CraftObject *visit(StringNode node)
+    {
+        return createString(node.token.text[1 .. $ - 1]);
     }
 }

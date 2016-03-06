@@ -3,173 +3,57 @@ module craft.types.object;
 
 import craft.types;
 
-T as(T : CraftObject)(CraftObject obj)
-{
-    T result = cast(T) obj;
-    assert(result !is null); // TODO
+import std.string;
+import std.variant;
 
-    return result;
+/+ - Object Class - +/
+
+__gshared CraftObject OBJECT_CLASS;
+
+shared static this()
+{
+    OBJECT_CLASS.class_ = &CLASS_CLASS; // Object.class => Class
+    OBJECT_CLASS.super_ = null;         // Object.super => null
+
+    OBJECT_CLASS.data["name"] = "Object";
 }
 
-class CraftObject
+/+ - Object Instance - +/
+
+CraftObject *createObject()
 {
-protected:
-    CraftClass _class;
+    auto obj = new CraftObject(&OBJECT_CLASS);
 
-public:
-    this()
-    {
-        _class = ObjectClass.value;
-    }
+    obj.methods["dispatch"] = native(1, &object_dispatch, true);
+    obj.methods["hash_id"]  = native(0, &object_hashId);
+    obj.methods["invoke"]   = native(1, &object_invoke, true);
+    obj.methods["string"]   = native(0, &object_string);
 
-    this(CraftClass class_)
-    {
-        _class = class_;
-    }
-
-    final CraftClass class_()
-    {
-        return _class;
-    }
-
-    final CraftObject invoke(string name, Arguments arguments = Arguments())
-    {
-        auto method = class_.method(name);
-
-        if(method !is null)
-        {
-            return method.as!CraftMethod.call(this, arguments);
-        }
-        else
-        {
-            assert(0, name); // TODO
-        }
-    }
-
-    final CraftObject opPlus()
-    {
-        return invoke("opPlus");
-    }
-
-    final CraftObject opMinus()
-    {
-        return invoke("opMinus");
-    }
-
-    final CraftObject opNegate()
-    {
-        return invoke("opNegate");
-    }
-
-    final CraftObject opComplement()
-    {
-        return invoke("opComplement");
-    }
-
-    final CraftObject opAdd(CraftObject other)
-    {
-        return invoke("opAdd", Arguments(other));
-    }
-
-    final CraftObject opSubtract(CraftObject other)
-    {
-        return invoke("opSubtract", Arguments(other));
-    }
-
-    final CraftObject opMultiply(CraftObject other)
-    {
-        return invoke("opMultiply", Arguments(other));
-    }
-
-    final CraftObject opDivide(CraftObject other)
-    {
-        return invoke("opDivide", Arguments(other));
-    }
-
-    final CraftObject opModulo(CraftObject other)
-    {
-        return invoke("opModulo", Arguments(other));
-    }
-
-    final CraftObject opEqual(CraftObject other)
-    {
-        return invoke("opEqual", Arguments(other));
-    }
-
-    final CraftObject opNotEqual(CraftObject other)
-    {
-        return invoke("opNotEqual", Arguments(other));
-    }
-
-    final CraftObject opIs(CraftObject other)
-    {
-        return CraftBoolean.create(this is other);
-    }
-
-    final CraftObject prod(string name)
-    {
-        assert(0); // TODO
-    }
-}
-
-final class ObjectClass : CraftClass
-{
-private:
-    static CraftClass CLASS;
-
-    this()
-    {
-        super(null); // TODO
-    }
-
-    static void initialize()
-    {
-        CLASS = new ObjectClass;
-
-        CLASS.method("invoke", new NativeMethod(1, true, &objectInvoke));
-        CLASS.method("prod",   new NativeMethod(1, &objectProd));
-
-        CLASS.method("opEqual",    new NativeMethod(1, &objectEqual));
-        CLASS.method("opNotEqual", new NativeMethod(1, &objectNotEqual));
-    }
-
-public:
-    @property
-    static CraftClass value()
-    {
-        if(CLASS is null)
-        {
-            initialize;
-        }
-
-        return CLASS;
-    }
+    return obj;
 }
 
 private
 {
-    CraftObject objectInvoke(CraftObject instance, Arguments arguments)
+    CraftObject *object_dispatch(CraftObject *instance, Arguments arguments)
     {
-        auto name = arguments[0].as!CraftString;
-        auto args = Arguments(arguments[1 .. $]);
-
-        return instance.invoke(name.value, args);
+        assert(0, "Method not found."); // TODO
     }
 
-    CraftObject objectProd(CraftObject instance, Arguments arguments)
+    CraftObject *object_hashId(CraftObject *instance, Arguments)
     {
-        auto name = arguments[0].as!CraftString;
-
-        return instance.prod(name.value);
+        return createInteger(instance.hashOf);
     }
 
-    CraftObject objectEqual(CraftObject instance, Arguments arguments)
+    CraftObject *object_invoke(CraftObject *instance, Arguments arguments)
     {
-        return CraftBoolean.create(instance is arguments[0]);
+        auto name = arguments[0];
+        auto args = arguments[1 .. $];
+
+        return instance.invoke(name.toNativeString, Arguments(args));
     }
 
-    CraftObject objectNotEqual(CraftObject instance, Arguments arguments)
+    CraftObject *object_string(CraftObject *instance, Arguments)
     {
-        return CraftBoolean.create(instance !is arguments[0]);
+        return createString("Object(#0x%X)".format(instance.hashOf));
     }
 }

@@ -7,56 +7,56 @@ import std.typecons;
 
 interface Visitor
 {
-    Object visit(AdditionNode node);
+    void *visit(AdditionNode node);
 
-    Object visit(AssignmentNode node);
+    void *visit(AssignmentNode node);
 
-    Object visit(BitshiftNode node);
+    void *visit(BitshiftNode node);
 
-    Object visit(BitwiseNode node);
+    void *visit(BitwiseNode node);
 
-    Object visit(BooleanNode node);
+    void *visit(BooleanNode node);
 
-    Object visit(EqualityNode node);
+    void *visit(EqualityNode node);
 
-    Object visit(ExpressionListNode node);
+    void *visit(ExpressionListNode node);
 
-    Object visit(IdentifierNode.Dollar node);
+    void *visit(IdentifierNode.Dollar node);
 
-    Object visit(IdentifierNode.Lower node);
+    void *visit(IdentifierNode.Lower node);
 
-    Object visit(IdentifierNode.Upper node);
+    void *visit(IdentifierNode.Upper node);
 
-    Object visit(IfNode node);
+    void *visit(IfNode node);
 
-    Object visit(IntegerNode node);
+    void *visit(IntegerNode node);
 
-    Object visit(InvokeNode node);
+    void *visit(InvokeNode node);
 
-    Object visit(LogicalNode node);
+    void *visit(LogicalNode node);
 
-    Object visit(MultiplicationNode node);
+    void *visit(MultiplicationNode node);
 
-    Object visit(PostfixNode node);
+    void *visit(PostfixNode node);
 
-    Object visit(PrefixNode node);
+    void *visit(PrefixNode node);
 
-    Object visit(RelationNode node);
+    void *visit(RelationNode node);
 
-    Object visit(StartNode node);
+    void *visit(StartNode node);
 
-    Object visit(StringNode node);
+    void *visit(StringNode node);
 
-    Object visit(SubscriptNode node);
+    void *visit(SubscriptNode node);
 
-    Object visit(TernaryNode node);
+    void *visit(TernaryNode node);
 }
 
 alias NullVisitor = BlackHole!Visitor;
 
 mixin template Visitable()
 {
-    override Object accept(Visitor visitor)
+    override void *accept(Visitor visitor)
     {
         return visitor.visit(this);
     }

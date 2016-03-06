@@ -5,9 +5,9 @@ import craft.ast.visitor;
 
 abstract class Node
 {
-    abstract Object accept(Visitor visitor);
+    abstract void *accept(Visitor visitor);
 
-    final T accept(T : Object)(Visitor visitor)
+    final T accept(T)(Visitor visitor)
     {
         return cast(T) accept(visitor);
     }
