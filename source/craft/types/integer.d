@@ -25,7 +25,7 @@ shared static this()
 /+ - Integer Instance - +/
 
 alias UnaryOps   = Alias!("+", "-", "!", "~");
-alias BinaryOps  = Alias!("+", "-", "*", "/", "%", "<<", ">>");
+alias BinaryOps  = Alias!("+", "-", "*", "/", "%", "<<", ">>", "&", "|", "^");
 alias CompareOps = Alias!("==", "!=", "<", "<=", ">", ">=");
 
 CraftObject *createInteger(long value)

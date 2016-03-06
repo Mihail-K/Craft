@@ -20,13 +20,13 @@ class Interpreter : NullVisitor
         {
             auto other = operand.accept!(CraftObject *)(this);
 
-            switch(operator.text)
+            switch(operator.rule)
             {
-                case "+": // OpPlus
+                case "OpPlus":
                     value = value.opAdd(other);
                     break;
 
-                case "-": // OpMinus
+                case "OpMinus":
                     value = value.opSub(other);
                     break;
 
@@ -53,11 +53,11 @@ class Interpreter : NullVisitor
 
             switch(operator.text)
             {
-                case "==": // OpEqual
+                case "OpEquals":
                     value = value.opEqual(other);
                     break;
 
-                case "!=": // OpNotEqual
+                case "OpNotEquals":
                     value = value.opNotEqual(other);
                     break;
 
@@ -74,6 +74,32 @@ class Interpreter : NullVisitor
         return createInteger(node.token.text.to!long);
     }
 
+    override CraftObject *visit(LogicalNode node)
+    {
+        auto value = node.nodes.front.accept!(CraftObject *)(this);
+
+        foreach(operator, operand; node.operators.lockstep(node.nodes.dropOne))
+        {
+            auto other = operand.accept!(CraftObject *)(this);
+
+            switch(operator.rule)
+            {
+                case "OpLogicalAnd":
+                    value = value.opLogicalAnd(other);
+                    break;
+
+                case "OpLogicalOr":
+                    value = value.opLogicalOr(other);
+                    break;
+
+                default:
+                    assert(0);
+            }
+        }
+
+        return value;
+    }
+
     override CraftObject *visit(MultiplicationNode node)
     {
         auto value = node.nodes.front.accept!(CraftObject *)(this);
@@ -82,17 +108,17 @@ class Interpreter : NullVisitor
         {
             auto other = operand.accept!(CraftObject *)(this);
 
-            switch(operator.text)
+            switch(operator.rule)
             {
-                case "*": // OpTimes
+                case "OpTimes":
                     value = value.opTimes(other);
                     break;
 
-                case "/": // OpDivide
+                case "OpDivide":
                     value = value.opDivide(other);
                     break;
 
-                case "%": // OpModulo
+                case "OpModulo":
                     value = value.opModulo(other);
                     break;
 
@@ -108,18 +134,18 @@ class Interpreter : NullVisitor
     {
         auto value = node.node.accept!(CraftObject *)(this);
 
-        switch(node.operator.text)
+        switch(node.operator.rule)
         {
-            case "+": // OpPlus
+            case "OpPlus":
                 return value.opPlus;
 
-            case "-": // OpMinus
+            case "OpMinus":
                 return value.opMinus;
 
-            case "~": // OpTilde
+            case "OpTilde":
                 return value.opComplement;
 
-            case "!": // OpBang
+            case "OpBang":
                 return value.opNegate;
 
             default:
@@ -135,21 +161,21 @@ class Interpreter : NullVisitor
         {
             auto other = operand.accept!(CraftObject *)(this);
 
-            switch(operator.text)
+            switch(operator.rule)
             {
-                case "<": // OpLess
+                case "OpLess":
                     value = value.opLess(other);
                     break;
 
-                case "<=": // OpLessEquals
+                case "OpLessEquals":
                     value = value.opLessOrEqual(other);
                     break;
 
-                case ">": // OpGreater
+                case "OpGreater":
                     value = value.opGreater(other);
                     break;
 
-                case ">=": // OpGreaterEquals
+                case "OpGreaterEquals":
                     value = value.opGreaterOrEqual(other);
                     break;
 

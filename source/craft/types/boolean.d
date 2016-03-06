@@ -121,5 +121,5 @@ T as(T)(CraftObject *instance) if(is(T == bool))
 @property
 T coerce(T)(CraftObject *instance) if(is(T == bool))
 {
-    return !instance.isExactType(&BOOLEAN_FALSE);
+    return !instance.isExactType(&FALSE_CLASS);
 }
