@@ -28,6 +28,8 @@ CraftObject *createString(string value)
 
     obj.data["raw"] = Variant(value);
 
+    obj.methods["=="] = native(1, &string_equal);
+
     obj.methods["length"] = native(0, &string_length);
     obj.methods["string"] = native(0, &string_string);
 
@@ -35,21 +37,26 @@ CraftObject *createString(string value)
 }
 
 @property
-string toNativeString(CraftObject *obj)
+string toNativeString(CraftObject *instance)
 {
-    assert(obj, "String reference is null.");
-    assert(obj.class_ == &STRING_CLASS, "Object is not a string."); // TODO
+    assert(instance.isChildType(&STRING_CLASS));
 
-    string result = obj.data["raw"].get!string;
-
-    return result;
+    return instance.getData("raw").get!string;
 }
 
 private
 {
+    CraftObject *string_equal(CraftObject *instance, Arguments arguments)
+    {
+        string left  = instance.toNativeString;
+        string right = arguments[0].toNativeString;
+
+        return createBoolean(left == right);
+    }
+
     CraftObject *string_length(CraftObject *instance, Arguments)
     {
-        return instance.data["raw"].get!string.length.createInteger;
+        return instance.toNativeString.length.createInteger;
     }
 
     CraftObject *string_string(CraftObject *instance, Arguments)

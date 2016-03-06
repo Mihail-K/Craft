@@ -24,6 +24,10 @@ CraftObject *createObject()
 {
     auto obj = new CraftObject(&OBJECT_CLASS);
 
+    obj.methods["=="] = native(1, &object_equals);
+    obj.methods["!="] = native(1, &object_notEquals);
+    obj.methods["is"] = native(1, &object_equals);
+
     obj.methods["dispatch"] = native(1, &object_dispatch, true);
     obj.methods["hash_id"]  = native(0, &object_hashId);
     obj.methods["invoke"]   = native(1, &object_invoke, true);
@@ -39,6 +43,11 @@ private
         assert(0, "Method not found."); // TODO
     }
 
+    CraftObject *object_equals(CraftObject *instance, Arguments arguments)
+    {
+        return createBoolean(instance is arguments[0]);
+    }
+
     CraftObject *object_hashId(CraftObject *instance, Arguments)
     {
         return createInteger(instance.hashOf);
@@ -50,6 +59,11 @@ private
         auto args = arguments[1 .. $];
 
         return instance.invoke(name.toNativeString, Arguments(args));
+    }
+
+    CraftObject *object_notEquals(CraftObject *instance, Arguments arguments)
+    {
+        return instance.invoke("==", arguments).opNegate;
     }
 
     CraftObject *object_string(CraftObject *instance, Arguments)

@@ -24,8 +24,9 @@ shared static this()
 
 /+ - Integer Instance - +/
 
-alias UnaryOps  = Alias!("+", "-", /*"!",*/ "~");
-alias BinaryOps = Alias!("+", "-", "*", "/", "%", "<<", ">>");
+alias UnaryOps   = Alias!("+", "-", "!", "~");
+alias BinaryOps  = Alias!("+", "-", "*", "/", "%", "<<", ">>");
+alias CompareOps = Alias!("==", "!=", "<", "<=", ">", ">=");
 
 CraftObject *createInteger(long value)
 {
@@ -43,18 +44,22 @@ CraftObject *createInteger(long value)
         obj.methods[op] = native(1, &integer_opBinary!(op));
     }
 
+    foreach(op; CompareOps)
+    {
+        obj.methods[op] = native(1, &integer_opCompare!(op));
+    }
+
     obj.methods["string"] = native(0, &integer_string);
 
     return obj;
 }
 
 @property
-long toNativeInteger(CraftObject *obj)
+long toNativeInteger(CraftObject *instance)
 {
-    assert(obj, "Integer reference is null.");
-    assert(obj.class_ == &INTEGER_CLASS, "Object is not an integer."); // TODO
+    assert(instance.isChildType(&INTEGER_CLASS));
 
-    return obj.data["raw"].get!long;
+    return instance.getData("raw").get!long;
 }
 
 private
@@ -62,6 +67,11 @@ private
     CraftObject *integer_opUnary(string op : "+")(CraftObject *instance, Arguments)
     {
         return instance;
+    }
+
+    CraftObject *integer_opUnary(string op : "!")(CraftObject *instance, Arguments)
+    {
+        return createBoolean(cast(bool) instance.toNativeInteger == 0);
     }
 
     CraftObject *integer_opUnary(string op)(CraftObject *instance, Arguments)
@@ -77,6 +87,14 @@ private
         long right = arguments[0].toNativeInteger;
 
         return createInteger(mixin("left " ~ op ~ " right"));
+    }
+
+    CraftObject *integer_opCompare(string op)(CraftObject *instance, Arguments arguments)
+    {
+        long left  = instance.toNativeInteger;
+        long right = arguments[0].toNativeInteger;
+
+        return createBoolean(mixin("left " ~ op ~ " right"));
     }
 
     CraftObject *integer_string(CraftObject *instance, Arguments)

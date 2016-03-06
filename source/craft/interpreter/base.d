@@ -40,8 +40,7 @@ class Interpreter : NullVisitor
 
     override CraftObject *visit(BooleanNode node)
     {
-        /*return CraftBoolean.create(node.token.text.to!bool);*/
-        return null;
+        return createBoolean(node.token.text.to!bool);
     }
 
     override CraftObject *visit(EqualityNode node)
@@ -54,13 +53,13 @@ class Interpreter : NullVisitor
 
             switch(operator.text)
             {
-                /*case "==": // OpEqual
+                case "==": // OpEqual
                     value = value.opEqual(other);
                     break;
 
                 case "!=": // OpNotEqual
                     value = value.opNotEqual(other);
-                    break;*/
+                    break;
 
                 default:
                     assert(0);
@@ -85,8 +84,8 @@ class Interpreter : NullVisitor
 
             switch(operator.text)
             {
-                /*case "*": // OpTimes
-                    value = value.opMultiply(other);
+                case "*": // OpTimes
+                    value = value.opTimes(other);
                     break;
 
                 case "/": // OpDivide
@@ -95,7 +94,7 @@ class Interpreter : NullVisitor
 
                 case "%": // OpModulo
                     value = value.opModulo(other);
-                    break;*/
+                    break;
 
                 default:
                     assert(0);
@@ -117,15 +116,49 @@ class Interpreter : NullVisitor
             case "-": // OpMinus
                 return value.opMinus;
 
-            /*case "~": // OpTilde
+            case "~": // OpTilde
                 return value.opComplement;
 
             case "!": // OpBang
-                return value.opNegate;*/
+                return value.opNegate;
 
             default:
                 assert(0);
         }
+    }
+
+    override CraftObject *visit(RelationNode node)
+    {
+        auto value = node.nodes.front.accept!(CraftObject *)(this);
+
+        foreach(operator, operand; node.operators.lockstep(node.nodes.dropOne))
+        {
+            auto other = operand.accept!(CraftObject *)(this);
+
+            switch(operator.text)
+            {
+                case "<": // OpLess
+                    value = value.opLess(other);
+                    break;
+
+                case "<=": // OpLessEquals
+                    value = value.opLessOrEqual(other);
+                    break;
+
+                case ">": // OpGreater
+                    value = value.opGreater(other);
+                    break;
+
+                case ">=": // OpGreaterEquals
+                    value = value.opGreaterOrEqual(other);
+                    break;
+
+                default:
+                    assert(0);
+            }
+        }
+
+        return value;
     }
 
     override CraftObject *visit(StartNode node)
