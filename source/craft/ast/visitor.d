@@ -37,6 +37,8 @@ interface Visitor
 
     void *visit(MultiplicationNode node);
 
+    void *visit(NullNode node);
+
     void *visit(PostfixNode node);
 
     void *visit(PrefixNode node);

@@ -455,6 +455,10 @@ private:
         {
             return new IdentifierNode.Dollar(last);
         }
+        else if(accept(LexerRules.KeyNull))
+        {
+            return new NullNode;
+        }
         else if(accept(LexerRules.KeyTrue) ||
                 accept(LexerRules.KeyFalse))
         {

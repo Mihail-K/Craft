@@ -41,6 +41,10 @@ shared static this()
     with(BOOLEAN_TRUE)
     {
         methods["$!"] = native(0, &true_not);
+        methods["&&"] = native(1, &true_and);
+        methods["&"] = native(1, &true_and);
+        methods["||"] = native(1, &true_or);
+        methods["|"] = native(1, &true_or);
         methods["^"]  = native(1, &true_xor);
 
         methods["string"] = native(0, &true_string);
@@ -54,6 +58,10 @@ shared static this()
     with(BOOLEAN_FALSE)
     {
         methods["$!"] = native(0, &false_not);
+        methods["&&"] = native(1, &false_and);
+        methods["&"] = native(1, &false_and);
+        methods["||"] = native(1, &false_or);
+        methods["|"] = native(1, &false_or);
         methods["^"]  = native(1, &false_xor);
 
         methods["string"] = native(0, &false_string);
@@ -67,17 +75,27 @@ CraftObject *createBoolean(bool value)
 
 private
 {
-    CraftObject *true_not(CraftObject *instance, Arguments)
+    CraftObject *true_and(CraftObject *, Arguments arguments)
+    {
+        return arguments[0];
+    }
+
+    CraftObject *true_not(CraftObject *, Arguments)
     {
         return &BOOLEAN_FALSE;
     }
 
-    CraftObject *true_string(CraftObject *instance, Arguments)
+    CraftObject *true_or(CraftObject *instance, Arguments)
+    {
+        return instance;
+    }
+
+    CraftObject *true_string(CraftObject *, Arguments)
     {
         return createString("true");
     }
 
-    CraftObject *true_xor(CraftObject *instance, Arguments arguments)
+    CraftObject *true_xor(CraftObject *, Arguments arguments)
     {
         return arguments[0].coerce!bool ? &BOOLEAN_FALSE : &BOOLEAN_TRUE;
     }
@@ -85,17 +103,27 @@ private
 
 private
 {
-    CraftObject *false_not(CraftObject *instance, Arguments)
+    CraftObject *false_and(CraftObject *instance, Arguments)
+    {
+        return instance;
+    }
+
+    CraftObject *false_not(CraftObject *, Arguments)
     {
         return &BOOLEAN_TRUE;
     }
 
-    CraftObject *false_string(CraftObject *instance, Arguments)
+    CraftObject *false_or(CraftObject *, Arguments arguments)
+    {
+        return arguments[0];
+    }
+
+    CraftObject *false_string(CraftObject *, Arguments)
     {
         return createString("false");
     }
 
-    CraftObject *false_xor(CraftObject *instance, Arguments arguments)
+    CraftObject *false_xor(CraftObject *, Arguments arguments)
     {
         return arguments[0].coerce!bool ? &BOOLEAN_TRUE : &BOOLEAN_FALSE;
     }

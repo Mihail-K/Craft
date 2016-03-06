@@ -78,6 +78,21 @@ CraftObject *opNotEqual(CraftObject *instance, CraftObject *other)
     return instance.invoke("!=", Arguments(other));
 }
 
+CraftObject *opBitAnd(CraftObject *instance, CraftObject *other)
+{
+    return instance.invoke("&", Arguments(other));
+}
+
+CraftObject *opBitOr(CraftObject *instance, CraftObject *other)
+{
+    return instance.invoke("|", Arguments(other));
+}
+
+CraftObject *opBitXor(CraftObject *instance, CraftObject *other)
+{
+    return instance.invoke("^", Arguments(other));
+}
+
 CraftObject *opLogicalAnd(CraftObject *instance, CraftObject *other)
 {
     return instance.invoke("&&", Arguments(other));

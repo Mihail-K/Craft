@@ -24,6 +24,7 @@ CraftObject *createObject()
 {
     auto obj = new CraftObject(&OBJECT_CLASS);
 
+    obj.methods["$!"] = native(0, &object_not);
     obj.methods["&&"] = native(1, &object_and);
     obj.methods["&"]  = native(1, &object_and);
     obj.methods["||"] = native(1, &object_or);
@@ -44,7 +45,7 @@ private
 {
     CraftObject *object_and(CraftObject *instance, Arguments arguments)
     {
-        return instance.coerce!bool ? arguments[0] : instance;
+        return arguments[0];
     }
 
     CraftObject *object_dispatch(CraftObject *instance, Arguments arguments)
@@ -70,6 +71,11 @@ private
         return instance.invoke(name.as!string, Arguments(args));
     }
 
+    CraftObject *object_not(CraftObject *instance, Arguments)
+    {
+        return &BOOLEAN_FALSE;
+    }
+
     CraftObject *object_notEquals(CraftObject *instance, Arguments arguments)
     {
         return instance.invoke("==", arguments).opNegate;
@@ -77,7 +83,7 @@ private
 
     CraftObject *object_or(CraftObject *instance, Arguments arguments)
     {
-        return instance.coerce!bool ? instance : arguments[0];
+        return instance;
     }
 
     CraftObject *object_string(CraftObject *instance, Arguments)

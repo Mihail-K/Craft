@@ -38,6 +38,36 @@ class Interpreter : NullVisitor
         return value;
     }
 
+    override CraftObject *visit(BitwiseNode node)
+    {
+        auto value = node.nodes.front.accept!(CraftObject *)(this);
+
+        foreach(operator, operand; node.operators.lockstep(node.nodes.dropOne))
+        {
+            auto other = operand.accept!(CraftObject *)(this);
+
+            switch(operator.rule)
+            {
+                case "OpBitAnd":
+                    value = value.opBitAnd(other);
+                    break;
+
+                case "OpBitOr":
+                    value = value.opBitOr(other);
+                    break;
+
+                case "OpBitXor":
+                    value = value.opBitXor(other);
+                    break;
+
+                default:
+                    assert(0);
+            }
+        }
+
+        return value;
+    }
+
     override CraftObject *visit(BooleanNode node)
     {
         return createBoolean(node.token.text.to!bool);
@@ -51,7 +81,7 @@ class Interpreter : NullVisitor
         {
             auto other = operand.accept!(CraftObject *)(this);
 
-            switch(operator.text)
+            switch(operator.rule)
             {
                 case "OpEquals":
                     value = value.opEqual(other);
@@ -128,6 +158,11 @@ class Interpreter : NullVisitor
         }
 
         return value;
+    }
+
+    override CraftObject *visit(NullNode node)
+    {
+        return &NULL;
     }
 
     override CraftObject *visit(PrefixNode node)
