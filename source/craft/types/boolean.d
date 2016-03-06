@@ -7,76 +7,119 @@ import std.variant;
 
 /+ - Boolean Class - +/
 
-__gshared static CraftObject BOOLEAN_CLASS;
+__gshared CraftObject TRUE_CLASS;
+__gshared CraftObject FALSE_CLASS;
 
 shared static this()
 {
-    with(BOOLEAN_CLASS)
+    with(TRUE_CLASS)
     {
-        class_ = &CLASS_CLASS;  // Boolean.class => Class
-        super_ = &OBJECT_CLASS; // Boolean.super => Object
+        class_ = &CLASS_CLASS;  // True.class => Class
+        super_ = &OBJECT_CLASS; // True.super => Object
 
-        data["name"] = "Boolean";
+        data["name"] = "True";
+    }
+
+    with(FALSE_CLASS)
+    {
+        class_ = &CLASS_CLASS;  // False.class => Class
+        super_ = &OBJECT_CLASS; // False.super => Object
+
+        data["name"] = "False";
     }
 }
 
 /+ - Boolean Instance - +/
 
-__gshared static CraftObject BOOLEAN_TRUE;
-__gshared static CraftObject BOOLEAN_FALSE;
+__gshared CraftObject BOOLEAN_TRUE;
+__gshared CraftObject BOOLEAN_FALSE;
+
+shared static this()
+{
+    BOOLEAN_TRUE = CraftObject(&TRUE_CLASS, createObject);
+
+    with(BOOLEAN_TRUE)
+    {
+        methods["$!"] = native(0, &true_not);
+        methods["^"]  = native(1, &true_xor);
+
+        methods["string"] = native(0, &true_string);
+    }
+}
+
+shared static this()
+{
+    BOOLEAN_FALSE = CraftObject(&FALSE_CLASS, createObject);
+
+    with(BOOLEAN_FALSE)
+    {
+        methods["$!"] = native(0, &false_not);
+        methods["^"]  = native(1, &false_xor);
+
+        methods["string"] = native(0, &false_string);
+    }
+}
 
 CraftObject *createBoolean(bool value)
 {
     return value ? &BOOLEAN_TRUE : &BOOLEAN_FALSE;
 }
 
-@property
-bool toNativeBoolean(CraftObject *instance)
+private
 {
-    assert(instance.isChildType(&BOOLEAN_CLASS));
+    CraftObject *true_not(CraftObject *instance, Arguments)
+    {
+        return &BOOLEAN_FALSE;
+    }
 
-    return instance.getData("raw").get!bool;
-}
+    CraftObject *true_string(CraftObject *instance, Arguments)
+    {
+        return createString("true");
+    }
 
-shared static this()
-{
-    BOOLEAN_TRUE  = initBoolean(true);
-    BOOLEAN_FALSE = initBoolean(false);
+    CraftObject *true_xor(CraftObject *instance, Arguments arguments)
+    {
+        return arguments[0].coerce!bool ? &BOOLEAN_FALSE : &BOOLEAN_TRUE;
+    }
 }
 
 private
 {
-    CraftObject initBoolean(bool value)
+    CraftObject *false_not(CraftObject *instance, Arguments)
     {
-        auto obj = CraftObject(&BOOLEAN_CLASS, createObject);
-
-        obj.data["raw"] = Variant(value);
-
-        obj.methods["$!"] = native(0, &boolean_not);
-
-        obj.methods["string"] = native(0, &boolean_string);
-
-        return obj;
+        return &BOOLEAN_TRUE;
     }
 
-    CraftObject *boolean_not(CraftObject *instance, Arguments)
+    CraftObject *false_string(CraftObject *instance, Arguments)
     {
-        return instance == &BOOLEAN_TRUE ? &BOOLEAN_FALSE : &BOOLEAN_TRUE;
+        return createString("false");
     }
 
-    CraftObject *boolean_string(CraftObject *instance, Arguments)
+    CraftObject *false_xor(CraftObject *instance, Arguments arguments)
     {
-        if(instance == &BOOLEAN_TRUE)
-        {
-            return createString("true");
-        }
-        else if(instance == &BOOLEAN_FALSE)
-        {
-            return createString("false");
-        }
-        else
-        {
-            assert(0);
-        }
+        return arguments[0].coerce!bool ? &BOOLEAN_TRUE : &BOOLEAN_FALSE;
     }
+}
+
+@property
+T as(T)(CraftObject *instance) if(is(T == bool))
+{
+    if(instance.isExactType(&TRUE_CLASS))
+    {
+        return true;
+    }
+    else if(instance.isExactType(&FALSE_CLASS))
+    {
+        return false;
+    }
+    else
+    {
+        assert(0);
+    }
+}
+
+@property
+T coerce(T)(CraftObject *instance) if(is(T == bool))
+{
+    return !instance.isExactType(&BOOLEAN_FALSE);
 }

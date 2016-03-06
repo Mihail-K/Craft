@@ -37,26 +37,32 @@ CraftObject *createString(string value)
 }
 
 @property
-string toNativeString(CraftObject *instance)
+T as(T)(CraftObject *instance) if(is(T == string))
 {
     assert(instance.isChildType(&STRING_CLASS));
 
     return instance.getData("raw").get!string;
 }
 
+@property
+T coerce(T)(CraftObject *instance) if(is(T == string))
+{
+    return instance.as!string; // TODO
+}
+
 private
 {
     CraftObject *string_equal(CraftObject *instance, Arguments arguments)
     {
-        string left  = instance.toNativeString;
-        string right = arguments[0].toNativeString;
+        string left  = instance.as!string;
+        string right = arguments[0].as!string;
 
         return createBoolean(left == right);
     }
 
     CraftObject *string_length(CraftObject *instance, Arguments)
     {
-        return instance.toNativeString.length.createInteger;
+        return instance.as!string.length.createInteger;
     }
 
     CraftObject *string_string(CraftObject *instance, Arguments)

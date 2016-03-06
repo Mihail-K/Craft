@@ -55,11 +55,17 @@ CraftObject *createInteger(long value)
 }
 
 @property
-long toNativeInteger(CraftObject *instance)
+T as(T)(CraftObject *instance) if(is(T == long))
 {
     assert(instance.isChildType(&INTEGER_CLASS));
 
     return instance.getData("raw").get!long;
+}
+
+@property
+T coerce(T)(CraftObject *instance) if(is(T == long))
+{
+    return instance.as!long; // TODO
 }
 
 private
@@ -71,34 +77,34 @@ private
 
     CraftObject *integer_opUnary(string op : "!")(CraftObject *instance, Arguments)
     {
-        return createBoolean(cast(bool) instance.toNativeInteger == 0);
+        return createBoolean(cast(bool) instance.as!long == 0);
     }
 
     CraftObject *integer_opUnary(string op)(CraftObject *instance, Arguments)
     {
-        long value = instance.toNativeInteger;
+        long value = instance.as!long;
 
         return createInteger(mixin(op ~ "value"));
     }
 
     CraftObject *integer_opBinary(string op)(CraftObject *instance, Arguments arguments)
     {
-        long left  = instance.toNativeInteger;
-        long right = arguments[0].toNativeInteger;
+        long left  = instance.as!long;
+        long right = arguments[0].as!long;
 
         return createInteger(mixin("left " ~ op ~ " right"));
     }
 
     CraftObject *integer_opCompare(string op)(CraftObject *instance, Arguments arguments)
     {
-        long left  = instance.toNativeInteger;
-        long right = arguments[0].toNativeInteger;
+        long left  = instance.as!long;
+        long right = arguments[0].as!long;
 
         return createBoolean(mixin("left " ~ op ~ " right"));
     }
 
     CraftObject *integer_string(CraftObject *instance, Arguments)
     {
-        return instance.toNativeInteger.to!string.createString;
+        return instance.as!long.to!string.createString;
     }
 }
