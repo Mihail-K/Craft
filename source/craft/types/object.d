@@ -93,5 +93,5 @@ private
 
 CraftObject *createObject()
 {
-    return OBJECT_TYPE.createInstance;
+    return (&OBJECT_TYPE).createInstance;
 }

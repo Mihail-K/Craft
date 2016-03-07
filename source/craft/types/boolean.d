@@ -4,8 +4,6 @@ module craft.types.boolean;
 import craft.types;
 import craft.types.object;
 
-import std.variant;
-
 /+ - Boolean Class - +/
 
 __gshared CraftType TRUE_TYPE;
@@ -110,12 +108,8 @@ __gshared CraftObject FALSE;
 
 shared static this()
 {
-    TRUE = TRUE_TYPE.allocInstance;
-}
-
-shared static this()
-{
-    FALSE = FALSE_TYPE.allocInstance;
+    TRUE  = (&TRUE_TYPE).allocInstance;
+    FALSE = (&FALSE_TYPE).allocInstance;
 }
 
 CraftObject *createBoolean(bool value)
@@ -144,4 +138,16 @@ T as(T)(CraftObject *instance) if(is(T == bool))
 T coerce(T)(CraftObject *instance) if(is(T == bool))
 {
     return !instance.isExactType(&FALSE_TYPE);
+}
+
+@property
+bool isFalse(CraftObject *instance)
+{
+    return instance is &FALSE;
+}
+
+@property
+bool isTrue(CraftObject *instance)
+{
+    return instance is &TRUE;
 }

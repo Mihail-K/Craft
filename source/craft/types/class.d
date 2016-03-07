@@ -29,11 +29,18 @@ private
 
 /+ - Class Instance - +/
 
+@property
 CraftObject *createClass(CraftType *type)
+in
 {
-    auto instance = CLASS_TYPE.createInstance;
+    assert(type, "Tried to create class from null type.");
+}
+body
+{
+    auto instance = (&CLASS_TYPE).createInstance;
 
     instance.data["type"] = type;
+    instance.methods      = type.staticMethods;
 
     return instance;
 }

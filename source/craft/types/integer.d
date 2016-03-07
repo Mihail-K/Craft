@@ -86,7 +86,7 @@ private
 
 CraftObject *createInteger(long value)
 {
-    auto instance = INTEGER_TYPE.createInstance;
+    auto instance = (&INTEGER_TYPE).createInstance;
 
     instance.data["raw"] = value;
 

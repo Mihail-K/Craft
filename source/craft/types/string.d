@@ -49,7 +49,7 @@ private
 
 CraftObject *createString(string value)
 {
-    auto instance = STRING_TYPE.createInstance;
+    auto instance = (&STRING_TYPE).createInstance;
 
     instance.data["raw"] = value;
 

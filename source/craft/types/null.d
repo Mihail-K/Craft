@@ -66,5 +66,11 @@ __gshared CraftObject NULL;
 
 shared static this()
 {
-    NULL = NULL_TYPE.allocInstance;
+    NULL = (&NULL_TYPE).allocInstance;
+}
+
+@property
+bool isNull(CraftObject *instance)
+{
+    return instance is &NULL;
 }
