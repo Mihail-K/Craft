@@ -51,7 +51,7 @@ private
 
     CraftObject *true_instance_xor(CraftObject *, Arguments arguments)
     {
-        return arguments[0].coerce!bool ? &FALSE : &TRUE;
+        return arguments[0].coerceBool ? &FALSE : &TRUE;
     }
 }
 
@@ -97,7 +97,7 @@ private
 
     CraftObject *false_instance_xor(CraftObject *, Arguments arguments)
     {
-        return arguments[0].coerce!bool ? &TRUE : &FALSE;
+        return arguments[0].coerceBool ? &TRUE : &FALSE;
     }
 }
 
@@ -118,7 +118,7 @@ CraftObject *createBoolean(bool value)
 }
 
 @property
-T as(T)(CraftObject *instance) if(is(T == bool))
+bool asBool(CraftObject *instance)
 {
     if(instance.isExactType(&TRUE_TYPE))
     {
@@ -135,9 +135,10 @@ T as(T)(CraftObject *instance) if(is(T == bool))
 }
 
 @property
-T coerce(T)(CraftObject *instance) if(is(T == bool))
+bool coerceBool(CraftObject *instance)
 {
-    return !instance.isExactType(&FALSE_TYPE);
+    return !instance.isExactType(&FALSE_TYPE) &&
+           !instance.isExactType(&NULL_TYPE);
 }
 
 @property

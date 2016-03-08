@@ -2,9 +2,11 @@
 module craft.types.integer;
 
 import craft.types;
+import craft.types.boolean;
 import craft.types.object;
 
 import std.conv;
+import std.math;
 import std.meta;
 
 /+ - Integer Type - +/
@@ -38,11 +40,33 @@ shared static this()
         t.instanceMethods[op] = native(1, &integer_instance_opCompare!(op));
     }
 
+    t.instanceMethods["abs"]    = native(0, &integer_instance_abs);
+    t.instanceMethods["max"]    = native(1, &integer_instance_max);
+    t.instanceMethods["min"]    = native(1, &integer_instance_min);
+    t.instanceMethods["sqrt"]   = native(0, &integer_instance_sqrt);
     t.instanceMethods["string"] = native(0, &integer_instance_string);
 }
 
 private
 {
+    CraftObject *integer_instance_abs(CraftObject *instance, Arguments)
+    {
+        long value = instance.as!long;
+        long abs   = value.abs;
+
+        return abs == value ? instance : abs.createInteger;
+    }
+
+    CraftObject *integer_instance_max(CraftObject *instance, Arguments arguments)
+    {
+        return instance.invoke(">", arguments).asBool ? instance : arguments[0];
+    }
+
+    CraftObject *integer_instance_min(CraftObject *instance, Arguments arguments)
+    {
+        return instance.invoke("<", arguments).asBool ? instance : arguments[0];
+    }
+
     CraftObject *integer_instance_opUnary(string op : "+")(CraftObject *instance, Arguments)
     {
         return instance;
@@ -74,6 +98,12 @@ private
         long right = arguments[0].as!long;
 
         return createBoolean(mixin("left " ~ op ~ " right"));
+    }
+
+    CraftObject *integer_instance_sqrt(CraftObject *instance, Arguments)
+    {
+        // TODO : This should return a floating point value.
+        return instance.as!long.to!double.sqrt.to!long.createInteger;
     }
 
     CraftObject *integer_instance_string(CraftObject *instance, Arguments)

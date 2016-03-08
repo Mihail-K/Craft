@@ -56,7 +56,7 @@ private
 
     CraftObject *null_instance_xor(CraftObject *instance, Arguments arguments)
     {
-        return arguments[0].coerce!bool ? &TRUE : &FALSE;
+        return arguments[0].coerceBool ? &TRUE : &FALSE;
     }
 }
 

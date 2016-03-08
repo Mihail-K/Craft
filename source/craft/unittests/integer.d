@@ -4,7 +4,7 @@ module craft.unittests.integer;
 import craft;
 import craft.unittests.common;
 
-unittest
+unittest // operators
 {
     assert(`1 + 2`.run.asString ==  "3");
     assert(`2 + 1`.run.asString ==  "3");
@@ -29,4 +29,15 @@ unittest
     assert(`2730 | 324`.run.asString == "3054");
     assert(` 740 &  82`.run.asString ==   "64");
     assert(`4123 ^ 819`.run.asString == "4904");
+}
+
+unittest // functions
+{
+    assert(`(-123).abs`.run.asString == "123");
+    assert(`(+123).abs`.run.asString == "123");
+
+    assert(`123.max(456)`.run.asString == "456");
+    assert(`123.min(456)`.run.asString == "123");
+    assert(`456.max(123)`.run.asString == "456");
+    assert(`456.min(123)`.run.asString == "123");
 }
