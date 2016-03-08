@@ -40,7 +40,12 @@ body
     auto instance = (&CLASS_TYPE).createInstance;
 
     instance.data["type"] = type;
-    instance.methods      = type.staticMethods;
+
+    // Also include static methods in class.
+    foreach(key, value; type.staticMethods)
+    {
+        instance.methods[key] = value;
+    }
 
     return instance;
 }

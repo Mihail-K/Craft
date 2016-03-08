@@ -14,10 +14,11 @@ class Interpreter : NullVisitor
 {
     override CraftObject *visit(AccessNode node)
     {
-        auto left  = node.node.accept!(CraftObject *)(this);
-        auto right = node.member.token.text;
+        // Access a 'member' (0-argument function call).
+        auto left = node.node.accept!(CraftObject *)(this);
+        auto name = node.member.token.text;
 
-        return left.invoke(right);
+        return left.invoke(name);
     }
 
     override CraftObject *visit(AdditionNode node)
@@ -110,6 +111,29 @@ class Interpreter : NullVisitor
     override CraftObject *visit(IntegerNode node)
     {
         return createInteger(node.token.text.to!long);
+    }
+
+    override CraftObject *visit(InvokeNode node)
+    {
+        // Check for memeber access.
+        auto access = cast(AccessNode) node.node;
+
+        if(access !is null)
+        {
+            // Call a method as a member of a construct.
+            auto left = access.node.accept!(CraftObject *)(this);
+            auto name = access.member.token.text;
+            auto args = node.args.nodes.map!(n => n.accept!(CraftObject *)(this)).array;
+
+            return left.invoke(name, Arguments(args));
+        }
+        else
+        {
+            auto left = node.node.accept!(CraftObject *)(this);
+            auto args = node.args.nodes.map!(n => n.accept!(CraftObject *)(this)).array;
+
+            return left.invoke("invoke", Arguments(args));
+        }
     }
 
     override CraftObject *visit(LogicalNode node)
