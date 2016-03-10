@@ -51,7 +51,7 @@ private
 {
     CraftObject *integer_instance_abs(CraftObject *instance, Arguments)
     {
-        long value = instance.as!long;
+        long value = instance.asLong;
         long abs   = value.abs;
 
         return abs == value ? instance : abs.createInteger;
@@ -74,28 +74,28 @@ private
 
     CraftObject *integer_instance_opUnary(string op : "!")(CraftObject *instance, Arguments)
     {
-        return createBoolean(cast(bool) instance.as!long == 0);
+        return createBoolean(cast(bool) instance.asLong == 0);
     }
 
     CraftObject *integer_instance_opUnary(string op)(CraftObject *instance, Arguments)
     {
-        long value = instance.as!long;
+        long value = instance.asLong;
 
         return createInteger(mixin(op ~ "value"));
     }
 
     CraftObject *integer_instance_opBinary(string op)(CraftObject *instance, Arguments arguments)
     {
-        long left  = instance.as!long;
-        long right = arguments[0].as!long;
+        long left  = instance.asLong;
+        long right = arguments[0].asLong;
 
         return createInteger(mixin("left " ~ op ~ " right"));
     }
 
     CraftObject *integer_instance_opCompare(string op)(CraftObject *instance, Arguments arguments)
     {
-        long left  = instance.as!long;
-        long right = arguments[0].as!long;
+        long left  = instance.asLong;
+        long right = arguments[0].asLong;
 
         return createBoolean(mixin("left " ~ op ~ " right"));
     }
@@ -103,12 +103,12 @@ private
     CraftObject *integer_instance_sqrt(CraftObject *instance, Arguments)
     {
         // TODO : This should return a floating point value.
-        return instance.as!long.to!double.sqrt.to!long.createInteger;
+        return instance.asLong.to!double.sqrt.to!long.createInteger;
     }
 
     CraftObject *integer_instance_string(CraftObject *instance, Arguments)
     {
-        return instance.as!long.to!string.createString;
+        return instance.asLong.to!string.createString;
     }
 }
 
@@ -124,15 +124,15 @@ CraftObject *createInteger(long value)
 }
 
 @property
-T as(T)(CraftObject *instance) if(is(T == long))
+long asLong(CraftObject *instance)
 {
-    assert(instance.isChildType(&INTEGER_TYPE));
+    assert(instance.isExactType(&INTEGER_TYPE));
 
     return instance.getData("raw").get!long;
 }
 
 @property
-T coerce(T)(CraftObject *instance) if(is(T == long))
+long coerceLong(CraftObject *instance)
 {
-    return instance.as!long; // TODO
+    return instance.asLong; // TODO
 }

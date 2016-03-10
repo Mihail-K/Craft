@@ -120,25 +120,24 @@ CraftObject *createBoolean(bool value)
 @property
 bool asBool(CraftObject *instance)
 {
-    if(instance.isExactType(&TRUE_TYPE))
+    if(instance.isTrue)
     {
         return true;
     }
-    else if(instance.isExactType(&FALSE_TYPE))
+    else if(instance.isFalse)
     {
         return false;
     }
     else
     {
-        assert(0);
+        assert(0); // TODO
     }
 }
 
 @property
 bool coerceBool(CraftObject *instance)
 {
-    return !instance.isExactType(&FALSE_TYPE) &&
-           !instance.isExactType(&NULL_TYPE);
+    return !instance.isFalse && !instance.isNull;
 }
 
 @property

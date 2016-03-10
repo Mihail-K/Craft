@@ -28,15 +28,15 @@ private
 {
     CraftObject *string_instance_equal(CraftObject *instance, Arguments arguments)
     {
-        string left  = instance.as!string;
-        string right = arguments[0].as!string;
+        string left  = instance.asString;
+        string right = arguments[0].asString;
 
         return createBoolean(left == right);
     }
 
     CraftObject *string_instance_length(CraftObject *instance, Arguments)
     {
-        return instance.as!string.length.createInteger;
+        return instance.asString.length.createInteger;
     }
 
     CraftObject *string_instance_string(CraftObject *instance, Arguments)
@@ -57,15 +57,15 @@ CraftObject *createString(string value)
 }
 
 @property
-T as(T)(CraftObject *instance) if(is(T == string))
+string asString(CraftObject *instance)
 {
-    assert(instance.isChildType(&STRING_TYPE));
+    assert(instance.isExactType(&STRING_TYPE));
 
     return instance.getData("raw").get!string;
 }
 
 @property
-T coerce(T)(CraftObject *instance) if(is(T == string))
+string coerceString(CraftObject *instance)
 {
-    return instance.as!string; // TODO
+    return instance.invoke("string").asString;
 }

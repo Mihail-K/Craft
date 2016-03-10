@@ -65,7 +65,7 @@ private
         auto name = arguments[0];
         auto args = arguments[1 .. $];
 
-        return instance.invoke(name.as!string, Arguments(args));
+        return instance.invoke(name.asString, Arguments(args));
     }
 
     CraftObject *object_instance_not(CraftObject *instance, Arguments)
