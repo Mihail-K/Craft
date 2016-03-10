@@ -68,6 +68,16 @@ CraftObject *opGreaterOrEqual(CraftObject *instance, CraftObject *other)
     return instance.invoke(">=", Arguments(other));
 }
 
+CraftObject *opIs(CraftObject *instance, CraftObject *other)
+{
+    return instance.invoke("is", Arguments(other));
+}
+
+CraftObject *opIsNot(CraftObject *instance, CraftObject *other)
+{
+    return instance.invoke("isnt", Arguments(other));
+}
+
 CraftObject *opEqual(CraftObject *instance, CraftObject *other)
 {
     return instance.invoke("==", Arguments(other));

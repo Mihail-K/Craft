@@ -246,6 +246,14 @@ class Interpreter : NullVisitor
                     value = value.opGreaterOrEqual(other);
                     break;
 
+                case "KeyIs":
+                    value = value.opIs(other);
+                    break;
+
+                case "KeyNot":
+                    value = value.opIsNot(other);
+                    break;
+
                 default:
                     assert(0);
             }

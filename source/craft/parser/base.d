@@ -278,8 +278,12 @@ private:
         while(accept(LexerRules.OpLess) ||
               accept(LexerRules.OpGreater) ||
               accept(LexerRules.OpLessEquals) ||
-              accept(LexerRules.OpGreaterEquals))
+              accept(LexerRules.OpGreaterEquals) ||
+              accept(LexerRules.KeyIs))
         {
+            // If matched `is` operator, check for not keyword.
+            last.rule == "KeyIs" && accept(LexerRules.KeyNot);
+
             operators ~= last;
             nodes ~= bitshift;
         }

@@ -315,6 +315,16 @@ enum LexerRules : LexerRule
         new Primitive("if")
     ),
 
+    KeyIs = LexerRule("KeyIs")
+    .pattern(
+        new Primitive("is")
+    ),
+
+    KeyNot = LexerRule("KeyNot")
+    .pattern(
+        new Primitive("not")
+    ),
+
     KeyNull = LexerRule("KeyNull")
     .pattern(
         new Primitive("null")

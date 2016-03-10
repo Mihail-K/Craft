@@ -26,6 +26,9 @@ shared static this()
     t.instanceMethods["=="] = native(1, &object_instance_eq);
     t.instanceMethods["!="] = native(1, &object_instance_ne);
 
+    t.instanceMethods["is"]   = native(1, &object_instance_eq);
+    t.instanceMethods["isnt"] = native(1, &object_instance_isnt);
+
     t.instanceMethods["class"]    = native(0, &object_instance_class);
     t.instanceMethods["dispatch"] = native(1, &object_instance_dispatch, true);
     t.instanceMethods["hash_id"]  = native(0, &object_instance_hashId);
@@ -66,6 +69,11 @@ private
         auto args = arguments[1 .. $];
 
         return instance.invoke(name.asString, Arguments(args));
+    }
+
+    CraftObject *object_instance_isnt(CraftObject *instance, Arguments arguments)
+    {
+        return instance.invoke("is", arguments).opNegate;
     }
 
     CraftObject *object_instance_not(CraftObject *instance, Arguments)
