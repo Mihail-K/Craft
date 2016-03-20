@@ -460,11 +460,13 @@ private:
         {
             return new IdentifierNode.Upper(last);
         }
+        else if(accept(LexerRules.IdentifierDollar))
+        {
+            return new IdentifierNode.Dollar(last);
+        }
         else
         {
-            expect(LexerRules.IdentifierDollar); // TODO
-
-            return new IdentifierNode.Dollar(last);
+            assert(0); // TODO
         }
     }
 

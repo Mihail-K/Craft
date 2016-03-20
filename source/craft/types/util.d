@@ -33,6 +33,11 @@ CraftObject *opSub(CraftObject *instance, CraftObject *other)
     return instance.invoke("-", Arguments(other));
 }
 
+CraftObject *opConcat(CraftObject *instance, CraftObject *other)
+{
+    return instance.invoke("~", Arguments(other));
+}
+
 CraftObject *opTimes(CraftObject *instance, CraftObject *other)
 {
     return instance.invoke("*", Arguments(other));

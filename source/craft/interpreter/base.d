@@ -39,6 +39,10 @@ class Interpreter : NullVisitor
                     value = value.opSub(other);
                     break;
 
+                case "OpTilde":
+                    value = value.opConcat(other);
+                    break;
+
                 default:
                     assert(0);
             }
