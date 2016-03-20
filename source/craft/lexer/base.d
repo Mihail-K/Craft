@@ -47,7 +47,7 @@ public:
             {
                 static if(!rule.internal && !rule.partial)
                 {
-                    string result = rule.pattern.match(_input);
+                    string result = rule.pattern()(_input);
 
                     if(result && result.length > bestMatch.length)
                     {

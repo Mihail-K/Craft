@@ -1,7 +1,7 @@
 
 module craft.lexer.rule;
 
-import craft.pattern;
+import pattern;
 
 import std.ascii;
 
@@ -12,11 +12,7 @@ enum LexerRules : LexerRule
     Whitespace = LexerRule("Whitespace")
     .discard(true)
     .pattern(
-        new Repetition(
-            new Callback(
-                input => input[0].isWhite ? [ input[0] ] : null
-            )
-        )
+        repeat!isWhite
     ),
 
     /+ - Comments - +/
@@ -24,32 +20,32 @@ enum LexerRules : LexerRule
     LineComment = LexerRule("LineComment")
     .discard(true)
     .pattern(
-        new Sequence(
-            new Primitive("//"),
-            new Optional(
-                new Repetition(
-                    new Complement(
-                        new Primitive("\n")
+        sequence!(
+            primitive!("//"),
+            optional!(
+                repeat!(
+                    complement!(
+                        primitive!("\n")
                     )
                 )
             ),
-            new Primitive("\n")
+            primitive!("\n")
         )
     ),
 
     BlockComment = LexerRule("BlockComment")
     .discard(true)
     .pattern(
-        new Sequence(
-            new Primitive("/*"),
-            new Optional(
-                new Repetition(
-                    new Complement(
-                        new Primitive("*/")
+        sequence!(
+            primitive!("/*"),
+            optional!(
+                repeat!(
+                    complement!(
+                        primitive!("*/")
                     )
                 )
             ),
-            new Primitive("*/")
+            primitive!("*/")
         )
     ),
 
@@ -58,13 +54,13 @@ enum LexerRules : LexerRule
     Underscore = LexerRule("Underscore")
     .partial(true)
     .pattern(
-        new Primitive("_")
+        primitive!("_")
     ),
 
     Zero = LexerRule("Zero")
     .partial(true)
     .pattern(
-        new Primitive("0")
+        primitive!("0")
     ),
 
     /+ - Dec Literals - +/
@@ -72,19 +68,19 @@ enum LexerRules : LexerRule
     DecDigit = LexerRule("DecDigit")
     .partial(true)
     .pattern(
-        new Bracket('0', '9')
+        bracket!('0', '9')
     ),
 
     DecDigits = LexerRule("DecDigits")
     .partial(true)
     .pattern(
-        new Sequence(
-            DecDigit.pattern,
-            new Optional(
-                new Repetition(
-                    new Selection(
-                        DecDigit.pattern,
-                        Underscore.pattern
+        sequence!(
+            DecDigit.pattern(),
+            optional!(
+                repeat!(
+                    selection!(
+                        DecDigit.pattern(),
+                        Underscore.pattern()
                     )
                 )
             )
@@ -93,7 +89,7 @@ enum LexerRules : LexerRule
 
     DecLiteral = LexerRule("DecLiteral")
     .pattern(
-        DecDigits.pattern
+        DecDigits.pattern()
     ),
 
     /+ - Hex Literals - +/
@@ -101,23 +97,23 @@ enum LexerRules : LexerRule
     HexDigit = LexerRule("HexDigit")
     .partial(true)
     .pattern(
-        new Selection(
-            DecDigit.pattern,
-            new Bracket('a', 'f'),
-            new Bracket('A', 'F')
+        selection!(
+            DecDigit.pattern(),
+            bracket!('a', 'f'),
+            bracket!('A', 'F')
         )
     ),
 
     HexDigits = LexerRule("HexDigits")
     .partial(true)
     .pattern(
-        new Sequence(
-            HexDigit.pattern,
-            new Optional(
-                new Repetition(
-                    new Selection(
-                        HexDigit.pattern,
-                        Underscore.pattern
+        sequence!(
+            HexDigit.pattern(),
+            optional!(
+                repeat!(
+                    selection!(
+                        HexDigit.pattern(),
+                        Underscore.pattern()
                     )
                 )
             )
@@ -127,17 +123,17 @@ enum LexerRules : LexerRule
     HexPrefix = LexerRule("HexPrefix")
     .partial(true)
     .pattern(
-        new Sequence(
-            Zero.pattern,
-            new Primitive("x", "X")
+        sequence!(
+            Zero.pattern(),
+            primitive!("x", "X")
         )
     ),
 
     HexLiteral = LexerRule("HexLiteral")
     .pattern(
-        new Sequence(
-            HexPrefix.pattern,
-            HexDigits.pattern
+        sequence!(
+            HexPrefix.pattern(),
+            HexDigits.pattern()
         )
     ),
 
@@ -146,21 +142,21 @@ enum LexerRules : LexerRule
     OctDigit = LexerRule("OctDigit")
     .partial(true)
     .pattern(
-        new Selection(
-            new Bracket('0', '7')
+        selection!(
+            bracket!('0', '7')
         )
     ),
 
     OctDigits = LexerRule("OctDigits")
     .partial(true)
     .pattern(
-        new Sequence(
-            OctDigit.pattern,
-            new Optional(
-                new Repetition(
-                    new Selection(
-                        OctDigit.pattern,
-                        Underscore.pattern
+        sequence!(
+            OctDigit.pattern(),
+            optional!(
+                repeat!(
+                    selection!(
+                        OctDigit.pattern(),
+                        Underscore.pattern()
                     )
                 )
             )
@@ -170,17 +166,17 @@ enum LexerRules : LexerRule
     OctPrefix = LexerRule("OctPrefix")
     .partial(true)
     .pattern(
-        new Sequence(
-            Zero.pattern,
-            new Primitive("o", "O")
+        sequence!(
+            Zero.pattern(),
+            primitive!("o", "O")
         )
     ),
 
     OctLiteral = LexerRule("OctLiteral")
     .pattern(
-        new Sequence(
-            OctPrefix.pattern,
-            OctDigits.pattern
+        sequence!(
+            OctPrefix.pattern(),
+            OctDigits.pattern()
         )
     ),
 
@@ -189,52 +185,52 @@ enum LexerRules : LexerRule
     BackSlash = LexerRule("BackSlash")
     .partial(true)
     .pattern(
-        new Primitive("\\")
+        primitive!("\\")
     ),
 
     SingleQuote = LexerRule("SingleQuote")
     .partial(true)
     .pattern(
-        new Primitive("'")
+        primitive!("'")
     ),
 
     DoubleQuote = LexerRule("DoubleQuote")
     .partial(true)
     .pattern(
-        new Primitive("\"")
+        primitive!("\"")
     ),
 
     EscapeCharacter = LexerRule("EscapeCharacter")
     .partial(true)
     .pattern(
-        new Selection(
-            new Sequence(
-                BackSlash.pattern,
-                new Primitive(
+        selection!(
+            sequence!(
+                BackSlash.pattern(),
+                primitive!(
                     "0", "b", "f", "n", "r",
                     "t", "v", "'", "\"", "\\"
                 )
             ),
-            OctalEscape.pattern,
-            UnicodeEscape.pattern
+            OctalEscape.pattern(),
+            UnicodeEscape.pattern()
         )
     ),
 
     OctalEscape = LexerRule("OctalEscape")
     .partial(true)
     .pattern(
-        new Sequence(
-            BackSlash.pattern,
-            new Selection(
-                OctDigit.pattern,
-                new Sequence(
-                    OctDigit.pattern,
-                    OctDigit.pattern
+        sequence!(
+            BackSlash.pattern(),
+            selection!(
+                OctDigit.pattern(),
+                sequence!(
+                    OctDigit.pattern(),
+                    OctDigit.pattern()
                 ),
-                new Sequence(
-                    new Bracket('0', '3'),
-                    OctDigit.pattern,
-                    OctDigit.pattern
+                sequence!(
+                    bracket!('0', '3'),
+                    OctDigit.pattern(),
+                    OctDigit.pattern()
                 )
             )
         )
@@ -243,52 +239,52 @@ enum LexerRules : LexerRule
     UnicodeEscape = LexerRule("UnicodeEscape")
     .partial(true)
     .pattern(
-        new Sequence(
-            BackSlash.pattern,
-            new Primitive("u"),
-            HexDigit.pattern,
-            HexDigit.pattern,
-            HexDigit.pattern,
-            HexDigit.pattern
+        sequence!(
+            BackSlash.pattern(),
+            primitive!("u"),
+            HexDigit.pattern(),
+            HexDigit.pattern(),
+            HexDigit.pattern(),
+            HexDigit.pattern()
         )
     ),
 
     StringLiteral = LexerRule("StringLiteral")
     .pattern(
-        new Selection(
-            new Sequence(
-                SingleQuote.pattern,
-                new Optional(
-                    new Repetition(
-                        new Selection(
-                            new Complement(
-                                new Selection(
-                                    SingleQuote.pattern,
-                                    BackSlash.pattern
+        selection!(
+            sequence!(
+                SingleQuote.pattern(),
+                optional!(
+                    repeat!(
+                        selection!(
+                            complement!(
+                                selection!(
+                                    SingleQuote.pattern(),
+                                    BackSlash.pattern()
                                 )
                             ),
-                            EscapeCharacter.pattern
+                            EscapeCharacter.pattern()
                         )
                     )
                 ),
-                SingleQuote.pattern
+                SingleQuote.pattern()
             ),
-            new Sequence(
-                DoubleQuote.pattern,
-                new Optional(
-                    new Repetition(
-                        new Selection(
-                            new Complement(
-                                new Selection(
-                                    DoubleQuote.pattern,
-                                    BackSlash.pattern
+            sequence!(
+                DoubleQuote.pattern(),
+                optional!(
+                    repeat!(
+                        selection!(
+                            complement!(
+                                selection!(
+                                    DoubleQuote.pattern(),
+                                    BackSlash.pattern()
                                 )
                             ),
-                            EscapeCharacter.pattern
+                            EscapeCharacter.pattern()
                         )
                     )
                 ),
-                DoubleQuote.pattern
+                DoubleQuote.pattern()
             )
         )
     ),
@@ -297,295 +293,295 @@ enum LexerRules : LexerRule
 
     KeyElse = LexerRule("KeyElse")
     .pattern(
-        new Primitive("else")
+        primitive!("else")
     ),
 
     KeyEnd = LexerRule("KeyEnd")
     .pattern(
-        new Primitive("end")
+        primitive!("end")
     ),
 
     KeyFalse = LexerRule("KeyFalse")
     .pattern(
-        new Primitive("false")
+        primitive!("false")
     ),
 
     KeyIf = LexerRule("KeyIf")
     .pattern(
-        new Primitive("if")
+        primitive!("if")
     ),
 
     KeyIs = LexerRule("KeyIs")
     .pattern(
-        new Primitive("is")
+        primitive!("is")
     ),
 
     KeyNot = LexerRule("KeyNot")
     .pattern(
-        new Primitive("not")
+        primitive!("not")
     ),
 
     KeyNull = LexerRule("KeyNull")
     .pattern(
-        new Primitive("null")
+        primitive!("null")
     ),
 
     KeyThis = LexerRule("KeyThis")
     .pattern(
-        new Primitive("this")
+        primitive!("this")
     ),
 
     KeyTrue = LexerRule("KeyTrue")
     .pattern(
-        new Primitive("true")
+        primitive!("true")
     ),
 
     /+ - Operators - +/
 
     OpAssign = LexerRule("OpAssign")
     .pattern(
-        new Primitive("=")
+        primitive!("=")
     ),
 
     OpBang = LexerRule("OpBang")
     .pattern(
-        new Primitive("!")
+        primitive!("!")
     ),
 
     OpBitAnd = LexerRule("OpBitAnd")
     .pattern(
-        new Primitive("&")
+        primitive!("&")
     ),
 
     OpBitAndEquals = LexerRule("OpBitAndEquals")
     .pattern(
-        new Primitive("&=")
+        primitive!("&=")
     ),
 
     OpBitOr = LexerRule("OpBitOr")
     .pattern(
-        new Primitive("|")
+        primitive!("|")
     ),
 
     OpBitOrEquals = LexerRule("OpBitOrEquals")
     .pattern(
-        new Primitive("|=")
+        primitive!("|=")
     ),
 
     OpBracketLeft = LexerRule("OpBracketLeft")
     .pattern(
-        new Primitive("[")
+        primitive!("[")
     ),
 
     OpBracketRight = LexerRule("OpBracketRight")
     .pattern(
-        new Primitive("]")
+        primitive!("]")
     ),
 
     OpColon = LexerRule("OpColon")
     .pattern(
-        new Primitive(":")
+        primitive!(":")
     ),
 
     OpComma = LexerRule("OpComma")
     .pattern(
-        new Primitive(",")
+        primitive!(",")
     ),
 
     OpDivide = LexerRule("OpDivide")
     .pattern(
-        new Primitive("/")
+        primitive!("/")
     ),
 
     OpDivideEquals = LexerRule("OpDivideEquals")
     .pattern(
-        new Primitive("/=")
+        primitive!("/=")
     ),
 
     OpDot = LexerRule("OpDot")
     .pattern(
-        new Primitive(".")
+        primitive!(".")
     ),
 
     OpEquals = LexerRule("OpEquals")
     .pattern(
-        new Primitive("==")
+        primitive!("==")
     ),
 
     OpExponent = LexerRule("OpExponent")
     .pattern(
-        new Primitive("^^")
+        primitive!("^^")
     ),
 
     OpExponentEquals = LexerRule("OpExponentEquals")
     .pattern(
-        new Primitive("^^=")
+        primitive!("^^=")
     ),
 
     OpGreater = LexerRule("OpGreater")
     .pattern(
-        new Primitive(">")
+        primitive!(">")
     ),
 
     OpGreaterEquals = LexerRule("OpGreaterEquals")
     .pattern(
-        new Primitive(">=")
+        primitive!(">=")
     ),
 
     OpLess = LexerRule("OpLess")
     .pattern(
-        new Primitive("<")
+        primitive!("<")
     ),
 
     OpLessEquals = LexerRule("OpLessEquals")
     .pattern(
-        new Primitive("<=")
+        primitive!("<=")
     ),
 
     OpLogicalAnd = LexerRule("OpLogicalAnd")
     .pattern(
-        new Primitive("&&", "and")
+        primitive!("&&", "and")
     ),
 
     OpLogicalAndEquals = LexerRule("OpLogicalAndEquals")
     .pattern(
-        new Primitive("&&=")
+        primitive!("&&=")
     ),
 
     OpLogicalOr = LexerRule("OpLogicalOr")
     .pattern(
-        new Primitive("||", "or")
+        primitive!("||", "or")
     ),
 
     OpLogicalOrEquals = LexerRule("OpLogicalOrEquals")
     .pattern(
-        new Primitive("||=")
+        primitive!("||=")
     ),
 
     OpMinus = LexerRule("OpMinus")
     .pattern(
-        new Primitive("-")
+        primitive!("-")
     ),
 
     OpMinusEquals = LexerRule("OpMinusEquals")
     .pattern(
-        new Primitive("-=")
+        primitive!("-=")
     ),
 
     OpMinusMinus = LexerRule("OpMinusMinus")
     .pattern(
-        new Primitive("--")
+        primitive!("--")
     ),
 
     OpModulo = LexerRule("OpModulo")
     .pattern(
-        new Primitive("%")
+        primitive!("%")
     ),
 
     OpNotEquals = LexerRule("OpNotEquals")
     .pattern(
-        new Primitive("!=")
+        primitive!("!=")
     ),
 
     OpModuloEquals = LexerRule("OpModuloEquals")
     .pattern(
-        new Primitive("%=")
+        primitive!("%=")
     ),
 
     OpParenLeft = LexerRule("OpParenLeft")
     .pattern(
-        new Primitive("(")
+        primitive!("(")
     ),
 
     OpParenRight = LexerRule("OpParenRight")
     .pattern(
-        new Primitive(")")
+        primitive!(")")
     ),
 
     OpPlus = LexerRule("OpPlus")
     .pattern(
-        new Primitive("+")
+        primitive!("+")
     ),
 
     OpPlusEquals = LexerRule("OpPlusEquals")
     .pattern(
-        new Primitive("+=")
+        primitive!("+=")
     ),
 
     OpPlusPlus = LexerRule("OpPlusPlus")
     .pattern(
-        new Primitive("++")
+        primitive!("++")
     ),
 
     OpQuery = LexerRule("OpQuery")
     .pattern(
-        new Primitive("?")
+        primitive!("?")
     ),
 
     OpQueryEquals = LexerRule("OpQueryEquals")
     .pattern(
-        new Primitive("?=")
+        primitive!("?=")
     ),
 
     OpShiftLeft = LexerRule("OpShiftLeft")
     .pattern(
-        new Primitive("<<")
+        primitive!("<<")
     ),
 
     OpShiftLeftEquals = LexerRule("OpShiftLeftEquals")
     .pattern(
-        new Primitive("<<=")
+        primitive!("<<=")
     ),
 
     OpShiftRight = LexerRule("OpShiftRight")
     .pattern(
-        new Primitive(">>")
+        primitive!(">>")
     ),
 
     OpShiftRightEquals = LexerRule("OpShiftRightEquals")
     .pattern(
-        new Primitive(">>=")
+        primitive!(">>=")
     ),
 
     OpTilde = LexerRule("OpTilde")
     .pattern(
-        new Primitive("~")
+        primitive!("~")
     ),
 
     OpTildeEquals = LexerRule("OpTildeEquals")
     .pattern(
-        new Primitive("~=")
+        primitive!("~=")
     ),
 
     OpTimes = LexerRule("OpTimes")
     .pattern(
-        new Primitive("*")
+        primitive!("*")
     ),
 
     OpTimesEquals = LexerRule("OpTimesEquals")
     .pattern(
-        new Primitive("*=")
+        primitive!("*=")
     ),
 
     OpBitXor = LexerRule("OpBitXor")
     .pattern(
-        new Primitive("^")
+        primitive!("^")
     ),
 
     OpBitXorEquals = LexerRule("OpBitXorEquals")
     .pattern(
-        new Primitive("^=")
+        primitive!("^=")
     ),
 
     /+ - Identifiers - +/
 
     IdentifierDollar = LexerRule("IdentifierDollar")
     .pattern(
-        new Sequence(
-            new Primitive("$"),
-            new Optional(
-                new Repetition(
-                    LexerRules.IdentifierFragment.pattern
+        sequence!(
+            primitive!("$"),
+            optional!(
+                repeat!(
+                    IdentifierFragment.pattern()
                 )
             )
         )
@@ -593,14 +589,14 @@ enum LexerRules : LexerRule
 
     IdentifierLower = LexerRule("IdentifierLower")
     .pattern(
-        new Sequence(
-            new Selection(
-                new Bracket('a', 'z'),
-                new Primitive("_")
+        sequence!(
+            selection!(
+                bracket!('a', 'z'),
+                primitive!("_")
             ),
-            new Optional(
-                new Repetition(
-                    LexerRules.IdentifierFragment.pattern
+            optional!(
+                repeat!(
+                    IdentifierFragment.pattern()
                 )
             )
         )
@@ -608,11 +604,11 @@ enum LexerRules : LexerRule
 
     IdentifierUpper = LexerRule("IdentifierUpper")
     .pattern(
-        new Sequence(
-            new Bracket('A', 'Z'),
-            new Optional(
-                new Repetition(
-                    LexerRules.IdentifierFragment.pattern
+        sequence!(
+            bracket!('A', 'Z'),
+            optional!(
+                repeat!(
+                    IdentifierFragment.pattern()
                 )
             )
         )
@@ -621,11 +617,11 @@ enum LexerRules : LexerRule
     IdentifierFragment = LexerRule("IdentifierFragment")
     .partial(true)
     .pattern(
-        new Selection(
-            new Bracket('a', 'z'),
-            new Bracket('A', 'Z'),
-            new Bracket('0', '9'),
-            new Primitive("_")
+        selection!(
+            bracket!('a', 'z'),
+            bracket!('A', 'Z'),
+            bracket!('0', '9'),
+            primitive!("_")
         )
     ),
 
@@ -683,7 +679,7 @@ public:
         return this;
     }
 
-    Pattern pattern()
+    Pattern pattern() inout
     {
         return _pattern;
     }
