@@ -49,38 +49,18 @@ enum LexerRules : LexerRule
         )
     ),
 
-    /+ - Literals - +/
-
-    Underscore = LexerRule("Underscore")
-    .partial(true)
-    .pattern(
-        primitive!("_")
-    ),
-
-    Zero = LexerRule("Zero")
-    .partial(true)
-    .pattern(
-        primitive!("0")
-    ),
-
     /+ - Dec Literals - +/
-
-    DecDigit = LexerRule("DecDigit")
-    .partial(true)
-    .pattern(
-        bracket!('0', '9')
-    ),
 
     DecDigits = LexerRule("DecDigits")
     .partial(true)
     .pattern(
         sequence!(
-            DecDigit.pattern(),
+            isDigit,
             optional!(
                 repeat!(
                     selection!(
-                        DecDigit.pattern(),
-                        Underscore.pattern()
+                        isDigit,
+                        primitive!"_"
                     )
                 )
             )
@@ -89,31 +69,21 @@ enum LexerRules : LexerRule
 
     DecLiteral = LexerRule("DecLiteral")
     .pattern(
-        DecDigits.pattern()
+        DecDigits.pattern
     ),
 
     /+ - Hex Literals - +/
-
-    HexDigit = LexerRule("HexDigit")
-    .partial(true)
-    .pattern(
-        selection!(
-            DecDigit.pattern(),
-            bracket!('a', 'f'),
-            bracket!('A', 'F')
-        )
-    ),
 
     HexDigits = LexerRule("HexDigits")
     .partial(true)
     .pattern(
         sequence!(
-            HexDigit.pattern(),
+            isHexDigit,
             optional!(
                 repeat!(
                     selection!(
-                        HexDigit.pattern(),
-                        Underscore.pattern()
+                        isHexDigit,
+                        primitive!"_"
                     )
                 )
             )
@@ -124,7 +94,7 @@ enum LexerRules : LexerRule
     .partial(true)
     .pattern(
         sequence!(
-            Zero.pattern(),
+            primitive!("0"),
             primitive!("x", "X")
         )
     ),
@@ -139,24 +109,16 @@ enum LexerRules : LexerRule
 
     /+ - Oct Literals - +/
 
-    OctDigit = LexerRule("OctDigit")
-    .partial(true)
-    .pattern(
-        selection!(
-            bracket!('0', '7')
-        )
-    ),
-
     OctDigits = LexerRule("OctDigits")
     .partial(true)
     .pattern(
         sequence!(
-            OctDigit.pattern(),
+            isOctalDigit,
             optional!(
                 repeat!(
                     selection!(
-                        OctDigit.pattern(),
-                        Underscore.pattern()
+                        isOctalDigit,
+                        primitive!"_"
                     )
                 )
             )
@@ -167,7 +129,7 @@ enum LexerRules : LexerRule
     .partial(true)
     .pattern(
         sequence!(
-            Zero.pattern(),
+            primitive!("0"),
             primitive!("o", "O")
         )
     ),
@@ -182,30 +144,12 @@ enum LexerRules : LexerRule
 
     /+ - String Literals - +/
 
-    BackSlash = LexerRule("BackSlash")
-    .partial(true)
-    .pattern(
-        primitive!("\\")
-    ),
-
-    SingleQuote = LexerRule("SingleQuote")
-    .partial(true)
-    .pattern(
-        primitive!("'")
-    ),
-
-    DoubleQuote = LexerRule("DoubleQuote")
-    .partial(true)
-    .pattern(
-        primitive!("\"")
-    ),
-
     EscapeCharacter = LexerRule("EscapeCharacter")
     .partial(true)
     .pattern(
         selection!(
             sequence!(
-                BackSlash.pattern(),
+                primitive!("\\"),
                 primitive!(
                     "0", "b", "f", "n", "r",
                     "t", "v", "'", "\"", "\\"
@@ -220,17 +164,17 @@ enum LexerRules : LexerRule
     .partial(true)
     .pattern(
         sequence!(
-            BackSlash.pattern(),
+            primitive!("\\"),
             selection!(
-                OctDigit.pattern(),
+                isOctalDigit,
                 sequence!(
-                    OctDigit.pattern(),
-                    OctDigit.pattern()
+                    isOctalDigit,
+                    isOctalDigit
                 ),
                 sequence!(
                     bracket!('0', '3'),
-                    OctDigit.pattern(),
-                    OctDigit.pattern()
+                    isOctalDigit,
+                    isOctalDigit
                 )
             )
         )
@@ -240,12 +184,12 @@ enum LexerRules : LexerRule
     .partial(true)
     .pattern(
         sequence!(
-            BackSlash.pattern(),
+            primitive!("\\"),
             primitive!("u"),
-            HexDigit.pattern(),
-            HexDigit.pattern(),
-            HexDigit.pattern(),
-            HexDigit.pattern()
+            isHexDigit,
+            isHexDigit,
+            isHexDigit,
+            isHexDigit
         )
     ),
 
@@ -253,38 +197,38 @@ enum LexerRules : LexerRule
     .pattern(
         selection!(
             sequence!(
-                SingleQuote.pattern(),
+                primitive!("'"),
                 optional!(
                     repeat!(
                         selection!(
                             complement!(
                                 selection!(
-                                    SingleQuote.pattern(),
-                                    BackSlash.pattern()
+                                    primitive!("'"),
+                                    primitive!("\\")
                                 )
                             ),
                             EscapeCharacter.pattern()
                         )
                     )
                 ),
-                SingleQuote.pattern()
+                primitive!("'")
             ),
             sequence!(
-                DoubleQuote.pattern(),
+                primitive!("\""),
                 optional!(
                     repeat!(
                         selection!(
                             complement!(
                                 selection!(
-                                    DoubleQuote.pattern(),
-                                    BackSlash.pattern()
+                                    primitive!("\""),
+                                    primitive!("\\")
                                 )
                             ),
                             EscapeCharacter.pattern()
                         )
                     )
                 ),
-                DoubleQuote.pattern()
+                primitive!("\"")
             )
         )
     ),
@@ -618,9 +562,7 @@ enum LexerRules : LexerRule
     .partial(true)
     .pattern(
         selection!(
-            bracket!('a', 'z'),
-            bracket!('A', 'Z'),
-            bracket!('0', '9'),
+            isAlphaNum,
             primitive!("_")
         )
     ),
